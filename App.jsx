@@ -361,13 +361,20 @@ export default function App() {
 
   // Each point type holds an array of individual points, one note field per point,
   // so a tenant adding 3 power points can describe the location of each one separately.
-  const [electricity, setElectricity] = useState(() => saved.electricity ?? {
-    hasChanges: true,
-    points: {
-      light: [],
-      water: [],
-      power: []
-    }
+  // Guard against an old saved draft (from before this structure existed) that would
+  // be missing the `points` object and break every point button.
+  const [electricity, setElectricity] = useState(() => {
+    const fallback = { hasChanges: true, points: { light: [], water: [], power: [] } };
+    const s = saved.electricity;
+    if (!s || !s.points || typeof s.points !== 'object') return fallback;
+    return {
+      hasChanges: s.hasChanges ?? true,
+      points: {
+        light: Array.isArray(s.points.light) ? s.points.light : [],
+        water: Array.isArray(s.points.water) ? s.points.water : [],
+        power: Array.isArray(s.points.power) ? s.points.power : []
+      }
+    };
   });
 
   // Verification & Sign States
