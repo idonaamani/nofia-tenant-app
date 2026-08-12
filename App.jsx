@@ -346,19 +346,20 @@ function clearSavedDraft() {
 const STEPS = [
   { id: 0, label: 'ברוכים הבאים', icon: '👋' },
   { id: 1, label: 'הסבר שלב ב\'', icon: '📝' },
-  { id: 2, label: 'אלומיניום', icon: '🖼️' },
-  { id: 3, label: 'מדרגות', icon: '🪜' },
-  { id: 4, label: 'מעקות', icon: '⛓️' },
-  { id: 5, label: 'מטבח', icon: '🍳' },
-  { id: 6, label: 'תוספת טיח', icon: '🎨' },
-  { id: 7, label: 'פרגולה', icon: '⛱️' },
-  { id: 8, label: 'דלתות חוץ', icon: '🚪' },
-  { id: 9, label: 'דלתות פנים', icon: '🚪' },
-  { id: 10, label: 'שביל כניסה', icon: '🛣️' },
-  { id: 11, label: 'חימום תת רצפתי', icon: '🔥' },
-  { id: 12, label: 'מיזוג אוויר', icon: '❄️' },
-  { id: 13, label: 'שינויי חשמל אינסטלציה ובינוי', icon: '🔌' },
-  { id: 14, label: 'סיכום וחתימה', icon: '✍️' }
+  { id: 2, label: 'אישור תכניות', icon: '📐' },
+  { id: 3, label: 'אלומיניום', icon: '🖼️' },
+  { id: 4, label: 'מדרגות', icon: '🪜' },
+  { id: 5, label: 'מעקות', icon: '⛓️' },
+  { id: 6, label: 'מטבח', icon: '🍳' },
+  { id: 7, label: 'תוספת טיח', icon: '🎨' },
+  { id: 8, label: 'פרגולה', icon: '⛱️' },
+  { id: 9, label: 'דלתות חוץ', icon: '🚪' },
+  { id: 10, label: 'דלתות פנים', icon: '🚪' },
+  { id: 11, label: 'שביל כניסה', icon: '🛣️' },
+  { id: 12, label: 'חימום תת רצפתי', icon: '🔥' },
+  { id: 13, label: 'מיזוג אוויר', icon: '❄️' },
+  { id: 14, label: 'שינויי חשמל אינסטלציה ובינוי', icon: '🔌' },
+  { id: 15, label: 'סיכום וחתימה', icon: '✍️' }
 ];
 const LAST_STEP_ID = STEPS[STEPS.length - 1].id;
 
@@ -490,7 +491,7 @@ export default function App() {
 
   // Item 4: villas 1,2,4,9,20,21 are single-story — stairs step (id 3) is hidden entirely.
   const isSingleStoryVilla = SINGLE_STORY_VILLAS.includes(Number(villaNumber));
-  const visibleSteps = STEPS.filter(s => !(s.id === 3 && isSingleStoryVilla));
+  const visibleSteps = STEPS.filter(s => !(s.id === 4 && isSingleStoryVilla));
   const showStairsFlightQty = !isSingleStoryVilla && (STAIRS_FLIGHT_QTY_VILLAS === null || STAIRS_FLIGHT_QTY_VILLAS.includes(Number(villaNumber)));
 
   // Item 1: tenants can only look (not touch) until the final signature page. Coordinators
@@ -538,6 +539,21 @@ export default function App() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coordinatorVillaParam]);
+
+  // Item 2: fetch this villa's plan share-links (external URLs managed by admin/coordinator)
+  // fresh from Supabase whenever the logged-in villa changes — always live, not from the local draft.
+  const [planLinks, setPlanLinks] = useState({});
+  useEffect(() => {
+    if (!isLoggedIn || !isSupabaseConfigured || !villaNumber) return;
+    (async () => {
+      const { data } = await supabase
+        .from('villas')
+        .select('plan_links')
+        .eq('villa_number', Number(villaNumber))
+        .maybeSingle();
+      setPlanLinks(data?.plan_links ?? {});
+    })();
+  }, [isLoggedIn, villaNumber]);
 
   // Coordinator-only: save progress to Supabase at any point, without needing signature/submit.
   const handleCoordinatorSave = async () => {
@@ -889,7 +905,43 @@ export default function App() {
           </div>
         );
 
-      case 2: // Aluminum (Visual Swatches, Popups, Exact pricing)
+      case 2: // Plan approval (item 2) — external share links per discipline, managed by admin/coordinator
+        return (
+          <div>
+            <div className="page-title-section">
+              <h2>אישור תכניות</h2>
+              <p className="page-intro-text">תכניות וילה {villaNumber} — אינסטלציה, חשמל, אדריכלות ומיזוג אוויר</p>
+            </div>
+
+            <div className="highlight-box green">
+              <span>ℹ</span> הקישורים לתכניות מנוהלים ע"י מתאמת השינויים/חברת הניהול. אם קישור חסר, יש לפנות אליהם.
+            </div>
+
+            <div className="options-grid" style={{ marginTop: '1.5rem' }}>
+              {[
+                { key: 'architecture', label: 'אדריכלות', icon: '🏛️' },
+                { key: 'electricity', label: 'חשמל', icon: '🔌' },
+                { key: 'plumbing', label: 'אינסטלציה', icon: '🚰' },
+                { key: 'hvac', label: 'מיזוג אוויר', icon: '❄️' }
+              ].map(d => (
+                <div key={d.key} className="option-card" style={{ minHeight: 'auto', cursor: 'default' }}>
+                  <div className="option-card-header">
+                    <span className="option-title">{d.icon} {d.label}</span>
+                  </div>
+                  {planLinks[d.key] ? (
+                    <a href={planLinks[d.key]} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ marginTop: '0.75rem', display: 'inline-block' }}>
+                      פתיחת תכנית {d.label} ↗
+                    </a>
+                  ) : (
+                    <p className="muted-text" style={{ marginTop: '0.75rem' }}>טרם הועלה קישור לתכנית זו</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 3: // Aluminum (Visual Swatches, Popups, Exact pricing)
         return (
           <div>
             <div className="page-title-section">
@@ -1072,7 +1124,7 @@ export default function App() {
           </div>
         );
 
-      case 3: // Stairs (with real generated images)
+      case 4: // Stairs (with real generated images)
         return (
           <div>
             <div className="page-title-section">
@@ -1131,7 +1183,7 @@ export default function App() {
           </div>
         );
 
-      case 4: // Railings (real photos, colors, and per-linear-meter pricing)
+      case 5: // Railings (real photos, colors, and per-linear-meter pricing)
         return (
           <div>
             <div className="page-title-section">
@@ -1209,7 +1261,7 @@ export default function App() {
           </div>
         );
 
-      case 5: // Kitchen (item 6) — plan approval, color, cost
+      case 6: // Kitchen (item 6) — plan approval, color, cost
         return (
           <div>
             <div className="page-title-section">
@@ -1261,7 +1313,7 @@ export default function App() {
           </div>
         );
 
-      case 6: // Plaster add-on (item 7: color picker removed, only the thermal render option remains)
+      case 7: // Plaster add-on (item 7: color picker removed, only the thermal render option remains)
         return (
           <div>
             <div className="page-title-section">
@@ -1290,7 +1342,7 @@ export default function App() {
           </div>
         );
 
-      case 7: // Pergola (priced per sqm)
+      case 8: // Pergola (priced per sqm)
         return (
           <div>
             <div className="page-title-section">
@@ -1348,7 +1400,7 @@ export default function App() {
           </div>
         );
 
-      case 8: // Exterior Doors (real photos per model, drill-down full spec)
+      case 9: // Exterior Doors (real photos per model, drill-down full spec)
         return (
           <div>
             <div className="page-title-section">
@@ -1405,7 +1457,7 @@ export default function App() {
           </div>
         );
 
-      case 9: // Interior Doors (item 9: flat per-unit pricing, total door count, ממ"ד wood-leaf add-on)
+      case 10: // Interior Doors (item 9: flat per-unit pricing, total door count, ממ"ד wood-leaf add-on)
         return (
           <div>
             <div className="page-title-section">
@@ -1531,7 +1583,7 @@ export default function App() {
           </div>
         );
 
-      case 10: // Entrance Path (with visual representations)
+      case 11: // Entrance Path (with visual representations)
         return (
           <div>
             <div className="page-title-section">
@@ -1583,7 +1635,7 @@ export default function App() {
           </div>
         );
 
-      case 11: // Underfloor heating (item 10) — new, before the electric/plumbing step
+      case 12: // Underfloor heating (item 10) — new, before the electric/plumbing step
         return (
           <div>
             <div className="page-title-section">
@@ -1624,7 +1676,7 @@ export default function App() {
           </div>
         );
 
-      case 12: // Aircon — Tadiran (item 11) — new, before the electric/plumbing step
+      case 13: // Aircon — Tadiran (item 11) — new, before the electric/plumbing step
         return (
           <div>
             <div className="page-title-section">
@@ -1666,7 +1718,7 @@ export default function App() {
           </div>
         );
 
-      case 13: // Electricity & Plumbing (item 12: renamed)
+      case 14: // Electricity & Plumbing (item 12: renamed)
         return (
           <div>
             <div className="page-title-section">
@@ -1733,7 +1785,7 @@ export default function App() {
           </div>
         );
 
-      case 14: // Summary & Digital Signature (item 14: grouped notes shown here)
+      case 15: // Summary & Digital Signature (item 14: grouped notes shown here)
         return (
           <div>
             <div className="page-title-section">

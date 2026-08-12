@@ -1,7 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 
 const emptyForm = { villaNumber: '', tenantName: '', idNumbers: '', phone: '', email: '' };
+const emptyPlanLinks = { architecture: '', electricity: '', plumbing: '', hvac: '' };
+const PLAN_LINK_FIELDS = [
+  { key: 'architecture', label: 'אדריכלות' },
+  { key: 'electricity', label: 'חשמל' },
+  { key: 'plumbing', label: 'אינסטלציה' },
+  { key: 'hvac', label: 'מיזוג אוויר' }
+];
 
 // id_numbers is stored as a Postgres text[] (a villa usually has 2 owners); the admin
 // panel edits it as one comma-separated string for simplicity.
@@ -34,6 +41,8 @@ function AdminPanelInner() {
   const [addForm, setAddForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(emptyForm);
+  const [editingPlansId, setEditingPlansId] = useState(null); // item 2
+  const [editPlansForm, setEditPlansForm] = useState(emptyPlanLinks);
   const [actionMessage, setActionMessage] = useState('');
 
   useEffect(() => {
@@ -91,7 +100,7 @@ function AdminPanelInner() {
   const loadVillas = async () => {
     const { data, error } = await supabase
       .from('villas')
-      .select('id, villa_number, tenant_name, id_numbers, phone, email, needs_password_setup, submitted_at')
+      .select('id, villa_number, tenant_name, id_numbers, phone, email, needs_password_setup, submitted_at, plan_links')
       .order('villa_number');
     if (error) {
       setListError('שגיאה בטעינת רשימת הוילות.');
@@ -146,6 +155,23 @@ function AdminPanelInner() {
       return;
     }
     setEditingId(null);
+    setActionMessage('');
+    loadVillas();
+  };
+
+  // Item 2: edit the external share-link URLs shown to the tenant on the "אישור תכניות" step.
+  const startEditPlans = (villa) => {
+    setEditingPlansId(villa.id);
+    setEditPlansForm({ ...emptyPlanLinks, ...(villa.plan_links ?? {}) });
+  };
+
+  const handleSavePlans = async (villaId) => {
+    const { error } = await supabase.from('villas').update({ plan_links: editPlansForm }).eq('id', villaId);
+    if (error) {
+      setActionMessage(`שגיאה בשמירת קישורי התכניות: ${error.message}`);
+      return;
+    }
+    setEditingPlansId(null);
     setActionMessage('');
     loadVillas();
   };
@@ -254,7 +280,8 @@ function AdminPanelInner() {
           </thead>
           <tbody>
             {villas.map((villa) => (
-              <tr key={villa.id}>
+              <Fragment key={villa.id}>
+              <tr>
                 <td>{villa.villa_number}</td>
                 {editingId === villa.id ? (
                   <>
@@ -282,6 +309,7 @@ function AdminPanelInner() {
                   ) : (
                     <>
                       <button type="button" className="btn btn-accent" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => openCoordinatorEditor(villa.villa_number)}>✎ עריכת שינויים</button>
+                      <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => startEditPlans(villa)}>📐 קישורי תכניות</button>
                       <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => startEdit(villa)}>עריכת פרטי קשר</button>
                       {role === 'admin' && (
                         <>
@@ -293,6 +321,32 @@ function AdminPanelInner() {
                   )}
                 </td>
               </tr>
+              {editingPlansId === villa.id && (
+                <tr>
+                  <td colSpan={8}>
+                    <div className="selection-details-panel" style={{ margin: 0 }}>
+                      <div className="swatch-label" style={{ marginBottom: '0.75rem' }}>קישורי תכניות — וילה {villa.villa_number} (אדריכלות / חשמל / אינסטלציה / מיזוג אוויר)</div>
+                      {PLAN_LINK_FIELDS.map(f => (
+                        <div key={f.key} className="panel-row" style={{ marginBottom: '0.5rem' }}>
+                          <span className="panel-row-label" style={{ minWidth: '90px' }}>{f.label}:</span>
+                          <input
+                            type="url"
+                            className="form-control"
+                            placeholder="קישור שיתוף (OneDrive / Google Drive)"
+                            value={editPlansForm[f.key]}
+                            onChange={(e) => setEditPlansForm({ ...editPlansForm, [f.key]: e.target.value })}
+                          />
+                        </div>
+                      ))}
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+                        <button type="button" className="btn btn-primary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => handleSavePlans(villa.id)}>שמירה</button>
+                        <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => setEditingPlansId(null)}>ביטול</button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+              </Fragment>
             ))}
           </tbody>
         </table>
