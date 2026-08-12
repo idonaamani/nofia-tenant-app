@@ -17,8 +17,6 @@ import aluminumColorOnyx from './assets/aluminum_color_onyx.jpg';
 import aluminumColorGray from './assets/aluminum_color_gray.jpg';
 import aluminumColorMeteorite from './assets/aluminum_color_meteorite.jpg';
 
-import plasterNgy080Img from './assets/plaster_ngy080.jpg';
-import plasterNgy070Img from './assets/plaster_ngy070.jpg';
 
 import pergolaAluminumImg from './assets/pergola_aluminum.jpg';
 import pergolaAlusteelImg from './assets/pergola_alusteel.jpg';
@@ -37,8 +35,6 @@ import pathConcreteFinishedImg from './assets/path_concrete_finished.jpg';
 import pathPaversImg from './assets/path_pavers.jpg';
 import pathTravertineImg from './assets/path_travertine.jpg';
 
-import gateDrawingImg from './assets/gate_drawing.jpg';
-import gatePhotoImg from './assets/gate_photo.jpg';
 
 // Structured data constants for models, specifications, and prices.
 // Prices and water/wind-tightness ratings (מדרג איטום רוח/מים) verified against the
@@ -148,94 +144,140 @@ const STAIRS_OPTIONS = [
   { id: 3, name: 'מדרגות קלות (קונסטרוקציה + עץ גושני)', price: 45000, desc: 'מדרגות קלות ומרחפות המבוססות על קונסטרוקציית פלדה כבדה ומדרכי עץ גושני יוקרתי, למראה אוורירי ופתוח.', image: stairsLightweightImg }
 ];
 
+// Item 4: villas 1, 2, 4, 9, 20, 21 are single-story (קומה אחת) — the entire stairs step is
+// hidden for them. A "כמות גרמים לפי מפלסים" quantity option is meant for 3 specific two-story
+// villas only; those 3 numbers weren't specified, so for now the field shows for every villa
+// where stairs are relevant (i.e. not single-story) — narrow this list once Ido confirms it.
+const SINGLE_STORY_VILLAS = [1, 2, 4, 9, 20, 21];
+const STAIRS_FLIGHT_QTY_VILLAS = null; // TODO: e.g. [6, 11, 22] once confirmed — null = show for all multi-story villas
+
+// Prices per linear meter (מ"א), verified against הסכם עבודות קבלניות נופיה, סעיף 3.1.7 (עמ' 113):
+// ברקוד +320/מ"א, אקספנדד +650/מ"א, שניהם לפני מע"מ.
 const RAILINGS_OPTIONS = [
-  { id: 1, name: 'מעקה אנכי (סטנדרטי)', price: 0, desc: 'מעקה ברזל בעל שלבים אנכיים פשוטים ונקיים. מותקן בגוון שחור. כלול בסטנדרט.', image: railingVerticalImg },
-  { id: 2, name: 'מעקה ברקוד (משודרג)', price: null, desc: 'מעקה ברזל מעוצב במרווחים משתנים דמויי קוד ברקוד מודרני, בגוון שחור. מראה ייחודי ומתוחכם.', image: railingBarcodeImg },
-  { id: 3, name: 'מעקה אקספנדד (פרימיום)', price: null, desc: 'מעקה פח רשת מתוח (Expanded Metal) יוקרתי, בגוון שחור. בידוד ויזואלי קל ומראה תעשייתי יוקרתי.', image: railingExpandedImg }
+  { id: 1, name: 'מעקה אנכי (סטנדרטי)', price: 0, unit: 'מ"א', desc: 'מעקה ברזל בעל שלבים אנכיים פשוטים ונקיים. מותקן בגוון שחור. כלול בסטנדרט.', image: railingVerticalImg },
+  { id: 2, name: 'מעקה ברקוד (משודרג)', price: 320, unit: 'מ"א', desc: 'מעקה ברזל מעוצב במרווחים משתנים דמויי קוד ברקוד מודרני. מראה ייחודי ומתוחכם.', image: railingBarcodeImg },
+  { id: 3, name: 'מעקה אקספנדד (פרימיום)', price: 650, unit: 'מ"א', desc: 'מעקה פח רשת מתוח (Expanded Metal) יוקרתי. בידוד ויזואלי קל ומראה תעשייתי יוקרתי.', image: railingExpandedImg }
 ];
 
-// Price per sqm from "חוברת תוספות ומחירים.xlsx" — the brochure didn't distinguish a
-// premium price for the steel-reinforced option, so both use the same rate for now.
+// Real RAL-coded color options for railings (item 5). No brochure photos exist for these
+// specific codes, so each is shown as a solid color swatch (like the interior-door color dots).
+const RAILING_COLORS = [
+  { name: 'שחור', code: 'RAL 9005', hex: '#0a0a0a' },
+  { name: 'לבן', code: 'RAL 9003', hex: '#f4f4f2' },
+  { name: 'אפור בהיר', code: 'RAL 9006', hex: '#a5a5a5' },
+  { name: 'אפור כהה', code: 'RAL 9007', hex: '#8f8a86' },
+  { name: 'שמנת', code: 'RAL 1013', hex: '#e9e2c9' }
+];
+
+// Verified against הסכם עבודות קבלניות נופיה, סעיף 3.1.8 (עמ' 113): הפרגולה הימנית (אלומיניום)
+// היא הסטנדרט הכלול; פרגולה שמאלית (פלדה עם מרישי אלומיניום) בתוספת 550 ₪/מ"ר לפני מע"מ.
 const PERGOLA_OPTIONS = [
-  { id: 1, name: 'פרגולת אלומיניום (משודרג)', price: 1100, unit: 'מ"ר', desc: 'פרגולה עשויה שלדות אלומיניום מחוזקות, עמידות מקסימלית למים ולשמש.', image: pergolaAluminumImg },
-  { id: 2, name: 'אלומיניום בשילוב פלדה (פרימיום)', price: 1100, unit: 'מ"ר', desc: 'פרגולת אלומיניום יוקרתית המשלבת קונסטרוקציית פלדה כבדה לעמידות מוגברת ומפתחים רחבים במיוחד.', image: pergolaAlusteelImg }
+  { id: 1, name: 'פרגולת אלומיניום — ימנית (סטנדרט)', price: 0, unit: 'מ"ר', desc: 'פרגולה עשויה שלדות אלומיניום מחוזקות, עמידות מקסימלית למים ולשמש. כלולה בסטנדרט.', image: pergolaAluminumImg },
+  { id: 2, name: 'פלדה עם מרישי אלומיניום — שמאלית (משודרג)', price: 550, unit: 'מ"ר', desc: 'פרגולת פלדה יוקרתית עם מרישי אלומיניום לעמידות מוגברת ומפתחים רחבים במיוחד.', image: pergolaAlusteelImg }
 ];
 
 // Flat price per unit from "חוברת תוספות ומחירים.xlsx" (שדרוג דלת כניסה חוץ) — applies
 // equally to all three models since the brochure doesn't price them individually.
+// Verified pricing (item 8): גארדה = סטנדרט ללא עלות, מינימאל (רב-בריח) +1,250 ₪+מע"מ,
+// שחר +750 ₪+מע"מ. contactName/contactPhone are placeholders for the supplier rep per door —
+// fill in via the coordinator/admin panel once received.
 const EXT_DOORS_OPTIONS = [
   {
     id: 1,
     name: 'דלת חוץ דגם גארדה (סטנדרטי)',
-    price: 6500,
+    price: 0,
+    contactName: '',
+    contactPhone: '',
     desc: 'דלת פלדה דגם גארדה. מוצגת בגוון אפור בטון גובה 260 ס"מ.',
     image: doorGardaImg,
     fullSpec: '• סוגר נעילה: מעניק ביטחון מוגבר ע"י נעילה נוספת.\n• SMART™: הדלת ניתנת לשדרוג לדלת חכמה הנשלטת ע"י אפליקציה, טביעת אצבע או קוד, עם מנגנון אינטגרלי חבוי ואישור הלכתי ממכון צומת.\n• דלת פלדה העשויה פלדה המצטיינת בחוזק ובהגנה על הבית.\n• עמידה בתנאי חוץ: צביעה אלקטרוסטטית המתאימה לתנאי חוץ ולבתים פרטיים.\n• מידות: ניתנת להזמנה כדלת בודדת, דלת וחצי או דלת כפולה.\n• שדרוג: ניתנת להזמנה עם משקוף בקו אפס עם הקיר וצירים סמויים.\n• דלת כניסה דגם גארדה מוצגת בגוון אפור בטון בגובה 260 ס"מ, דלת מבוצעת בסגנון תעשייתי מודרני.\n• דלת פלדה מגולוונת בגמר צבע ממנפחת הגוונים, צירי פייפ או צירי HEAVY DUTY מוסתרים (בתוספת תשלום). עובי הדלת 1.25 מ"מ עם חיזוקי פלדה ואורך ורוחב פנימיים בעלי הפחתת רעש DB30. עובי דלת 50 מ"מ, משקל הדלת כ-50 ק"ג. הדלת מסופקת עם גומי איטום היקפי, אינסרט תחתון טלסקופי לשליטה על גובה הדלת ומברשת תחתונה. משקוף בניה מפלדה מגולוונת בעובי 1.5 מ"מ המבוטן לקיר, או משקוף כיסוי המותקן על גבי משקוף קיים.\n• ניתן להזמין כמשקוף בקו הקיר (קו אפס).\n• בשילוב פסים שקועים לרוחב במעטה החיצוני.\n• דגמי חריצה: בגוונים בהירים החריץ בולט פחות מאשר בגוונים כהים.\n• לוזרפ ועזרים: לוזרפ מעוצב בגמר ניקל מדגם "קורל", מגן צילינדר מפלדה מסוחמת מוגנת פריצה, מנעול רב-בריחי וצילינדר לוקסיס תוצרת רב-בריח. בריח תחתון (מנגנון תגבור) צידי להגברת רמת הביטחון, מעצור ליפסקי בגוון טבעי (כסף), רגל ביטחון (בדלתות הנפתחות לתוך הבית בלבד), עינית הצצה טלסקופית.\n• רוחב דלת: 580–1,200 מ"מ.\n• גובה דלת: 1,890–2,400 מ"מ.'
   },
   {
     id: 2,
-    name: 'דלת חוץ דגם מינימאל (משודרג)',
-    price: 6500,
-    desc: 'דלת חוץ מעוצבת בקו נקי מינימליסטי ויוקרתי.',
+    name: 'דלת חוץ דגם מינימאל — רב-בריח (משודרג)',
+    price: 1250,
+    contactName: '',
+    contactPhone: '',
+    desc: 'דלת חוץ מעוצבת בקו נקי מינימליסטי ויוקרתי, מבית רב-בריח.',
     image: doorMinimalImg,
     fullSpec: '• סוגר נעילה: מעניק ביטחון מוגבר ע"י נעילה נוספת.\n• SMART™: הדלת ניתנת לשדרוג לדלת חכמה הנשלטת ע"י אפליקציה, טביעת אצבע או קוד, עם מנגנון אינטגרלי חבוי ואישור הלכתי ממכון צומת.\n• דלת פלדה המצטיינת בחוזק ובהגנה על הבית, עמידה בתנאי חוץ (צביעה אלקטרוסטטית) המתאימה לבתים פרטיים.\n• מידות: ניתנת להזמנה כדלת בודדת, דלת וחצי או דלת כפולה.\n• דלת פלדה מגולוונת בגמר צבע ממנפחת הגוונים, צירי HEAVY DUTY מוסתרים (בתוספת תשלום). עובי הדלת 1.25 מ"מ עם חיזוקי פלדה, עובי דלת 50 מ"מ DB30, משקל כ-50 ק"ג, גומי איטום היקפי ואינסרט תחתון טלסקופי.\n• לוזרפ ועזרים: לוזרפ מעוצב בגמר ניקל מדגם "קורל", מגן צילינדר מוגן פריצה, מנעול רב-בריחי וצילינדר לוקסיס, בריח תחתון (מנגנון תגבור), מעצור ליפסקי, עינית הצצה טלסקופית.\n• מראה חלק ללא חלוקות או קישוטים, מתאימה לעיצוב קירות חלקים.\n• רוחב דלת: 580–1,200 מ"מ.\n• גובה דלת: 1,890–2,400 מ"מ.'
   },
   {
     id: 3,
     name: 'דלת חוץ דגם שחר (משודרג)',
-    price: 6500,
+    price: 750,
+    contactName: '',
+    contactPhone: '',
     desc: 'דלת חוץ מעוצבת דגם שחר בעלת חלוקות רוחביות.',
     image: doorShacharImg,
     fullSpec: '• סוגר נעילה: מעניק ביטחון מוגבר ע"י נעילה נוספת.\n• SMART™: הדלת ניתנת לשדרוג לדלת חכמה הנשלטת ע"י אפליקציה, טביעת אצבע או קוד, עם מנגנון אינטגרלי חבוי ואישור הלכתי ממכון צומת.\n• דלת פלדה המצטיינת בחוזק ובהגנה על הבית, עמידה בתנאי חוץ המתאימה לבתים פרטיים.\n• מידות: ניתנת להזמנה כדלת בודדת, דלת וחצי או דלת כפולה.\n• שדרוג: ניתנת להזמנה עם משקוף בקו אפס עם הקיר וצירים סמויים.\n• דלת כניסה דגם שחר מוצגת בגוון אפור בטון בגובה 260 ס"מ.\n• דלת פלדה מגולוונת בגמר צבע ממנפחת הגוונים, צירי פייפ או HEAVY DUTY מוסתרים (בתוספת תשלום). עובי 1.25 מ"מ עם חיזוקי פלדה, עובי דלת 50 מ"מ DB30, משקל כ-50 ק"ג, גומי איטום היקפי ואינסרט תחתון טלסקופי. משקוף בניה מפלדה מגולוונת בעובי 1.5 מ"מ מבוטן לקיר, או משקוף כיסוי על גבי משקוף קיים.\n• ניתן להזמין כמשקוף בקו הקיר (קו אפס).\n• בשילוב פסים שקועים לרוחב במעטה החיצוני.\n• לוזרפ ועזרים: לוזרפ מעוצב בגמר ניקל מדגם "קורל", מגן צילינדר מוגן פריצה, מנעול רב-בריחי וצילינדר לוקסיס, בריח תחתון (מנגנון תגבור), מעצור ליפסקי, עינית הצצה טלסקופית.\n• רוחב דלת: 460–1,200 מ"מ.\n• גובה דלת: 1,890–2,310 מ"מ.'
   }
 ];
 
+// Supplier for all interior doors is חמדיה (Hamadia Group). Pricing model (item 9): option A
+// (אקוודור נאפולי) is the included standard; B/C/D are per-unit ADD-ONS on top of it, applied
+// per door in the villa's total door count — not per dry/wet room as before.
 const INT_DOORS_OPTIONS = [
   {
     id: 'A',
-    name: 'אופציה א\' - אקוודור נאפולי (פורמייקה)',
-    priceDry: 1200,
-    priceWet: 1245,
+    name: 'אופציה א\' - סטנדרט (אקוודור נאפולי, פורמייקה)',
+    price: 0,
     colors: ['לבן', 'שמנת', 'אגוז', 'אלון מולבן לאורך'],
     supplier: 'חמדיה',
-    desc: 'דלת איכותית מחופה פורמייקה 2 מ"מ מבית חמדיה.',
+    desc: 'דלת איכותית מחופה פורמייקה 2 מ"מ מבית חמדיה. כלולה בסטנדרט, ללא תוספת מחיר.',
     image: doorIntAImg,
     fullSpec: '• מילוי פנימי: פלקסבורד (Flexboard) מבודד רעשים.\n• ציפוי כנף: פורמייקה עבה 2 מ"מ עמידה בפני שריטות.\n• משקופים והלבשות: WPC עמיד מים (7 ס"מ) בתחתית.\n• אביזרים: ידית "בולוניה", מנעול מגנטי שקט, מעצור דלת מובנה.\n• חדרי שינה: כולל מנעול תפוס-פנוי והתקנה.\n• חדרים רטובים: כולל מנעול תפוס-פנוי, צוהר מעוצב והתקנה.'
   },
   {
     id: 'B',
-    name: 'אופציה ב\' - אקוודור דרימקולור (שלייפלק)',
-    priceDry: 1600,
-    priceWet: 1645,
+    name: 'אופציה ב\' - דרים קולור (שלייפלק)',
+    price: 480,
     colors: ['שלייפלק לבן', 'שלייפלק שמנת'],
     supplier: 'חמדיה',
-    desc: 'דלת בצביעה אטומה איכותית (שלייפלק בתנור) מבית חמדיה.',
+    desc: 'דלת בצביעה אטומה איכותית (שלייפלק בתנור) מבית חמדיה. תוספת 480 ₪ ליחידה.',
     image: doorIntBImg,
     fullSpec: '• מילוי פנימי: פלקסבורד (Flexboard) אקוסטי.\n• גימור: צבע שלייפלק מטאלי בתנור בעל מראה חלק ומבריק.\n• משקופים והלבשות: WPC עמיד מים (7 ס"מ).\n• אביזרים: ידית "בולוניה", מנעול מגנטי שקט, מעצור דלת.\n• חדרי שינה: כולל מנעול תפוס-פנוי והתקנה.\n• חדרים רטובים: כולל מנעול תפוס-פנוי, צוהר מעל הידית והתקנה.'
   },
   {
     id: 'C',
-    name: 'אופציה ג\' - אקוודור בקו אפס',
-    priceDry: 2200,
-    priceWet: 2245,
+    name: 'אופציה ג\' - אקוודור עם משקוף והלבשות קו אפס',
+    price: 3250,
     colors: ['לבן', 'שמנת'],
     supplier: 'חמדיה',
-    desc: 'משקוף והלבשות נסתרים בקו הקיר, צירים סמויים, כנף שלייפלק.',
+    desc: 'משקוף והלבשות נסתרים בקו הקיר, צירים סמויים. תוספת 3,250 ₪ ליחידה.',
     image: doorIntCImg,
     fullSpec: '• משקוף והלבשות נסתרים המותקנים בקו אחד עם הקיר (קו אפס).\n• צירים סמויים מתכווננים.\n• כנף דלת שלייפלק (דגם נאפולי) עם מילוי פלקסבורד.\n• אביזרים: ידית "בולוניה" יוקרתית, מנעול מגנטי, מעצור דלת.\n• חדרי שינה: כולל מנעול תפוס-פנוי והתקנה.\n• חדרים רטובים: כולל מנעול תפוס-פנוי, צוהר מעל הידית והתקנה.\n\n⚠ הערת מפתחים חשובה: דלתות קו אפס מצריכות הגדלת פתחי הבנייה ב-5 ס"מ בהתאם לתקן חמדיה.'
   },
   {
     id: 'D',
-    name: 'אופציה ד\' - TOP ZERO פרימיום',
-    priceDry: null,
-    priceWet: null,
+    name: 'אופציה ד\' - דלת כיס',
+    price: 3500,
     colors: [],
-    supplier: 'רב-בריח',
-    desc: 'מפרט קו אפס יוקרתי מבית רב-בריח. ללא תמחור בחוברת.',
+    supplier: 'חמדיה',
+    desc: 'דלת הזזה שקועה בתוך הקיר (דלת כיס). תוספת 3,500 ₪ ליחידה.',
     image: null,
-    fullSpec: '• יצרן: רב-בריח, דלת קו אפס (משקוף והלבשות בקו אחד עם הקיר).\n• עמידה במים: 10 שנות אחריות על נזקי מים ולחות (בכפוף לתעודת אחריות).\n• דלת בעלת בידוד אקוסטי - מילוי פלקסבורד וגומי אטימה. ניתן לשדרג לרמת DB-PLUS.\n• גובה: 220–240 ס"מ מריצוף סופי.\n• כל דלתות הפנים מסדרת טופ מיוצרות עם 7 ס"מ פולימר מוגן מים בתחתית הדלת, מילוי פלקסבורד לבידוד אקוסטי, מנעול מגנטי לנעילה שקטה ואטם היקפי להפחתת רעשים.\n• כנף הדלת בגימור פורמייקה איכותית עמידה במים בעובי 1.8 מ"מ בגמר צבע במבחר גוונים.\n• משקוף עץ גושני מפולח מצופה למינטו עמיד במים או WPC, בגוון תואם לדלת, והלבשות רחבות WPC עמידות מים בקו הקיר.\n• ניתן לצבוע את המשקופים וההלבשות לפי דרישה בכל גוון (בתוספת תשלום).\n• מבחר רב של זיגוגים ועיצובים בהתאם לסגנון ואופי הבית.\n• מידות: גובה 205/215/220/240 ס"מ מריצוף סופי, רוחב 70/80/90 ס"מ, חתך משקוף 9.5/12/14 ס"מ.'
+    fullSpec: '• דלת כיס (הזזה תוך-קירית) מבית חמדיה.\n• דורשת מחיצת גבס עם פס כיס ייעודי — יש לתאם עם מתאמת השינויים לפני ביצוע עבודות המחיצות.\n• גימור כנף ואביזרים בהתאם לדגם הבסיס שנבחר (אופציה א\'-ג\').\n• תוספת 3,500 ₪ ליחידה, מעבר למחיר הדלת הבסיסית.'
   }
 ];
+
+// ממ"ד (safe room) doors use a standard steel/concrete leaf. Adding a wood leaf on top of the
+// mandatory מ"ד-approved leaf costs a flat 1,000 ₪ per door (item 9).
+const MAMAD_WOOD_LEAF_PRICE = 1000;
+
+// Underfloor heating (item 10). Verified against הסכם עבודות קבלניות נופיה, סעיף 3.1.9 (עמ' 113):
+// הכנה בלבד (תשתית על בסיס מים) בתוספת 250 ₪/מ"ר לפני מע"מ. הכמות במ"ר ניתנת לעדכון ע"י
+// מתאמת שינויי הדיירים בלבד.
+const UNDERFLOOR_HEATING_PRICE_PER_SQM = 250;
+
+// Aircon (Tadiran) lump-sum prices per villa, verified against הסכם עבודות קבלניות נופיה,
+// סעיף 3.1.10 (עמ' 113-114) — מחיר פאושל לא כולל מע"מ. וילה 1 חסרה בטבלת ההסכם המקורית ודורשת
+// השלמה ע"י מתאמת השינויים.
+const AIRCON_PRICING = {
+  1: null,
+  2: 44769, 3: 67076, 4: 38181, 5: 54059, 6: 89820, 7: 68500, 8: 44768, 9: 46430, 10: 60081,
+  11: 98870, 12: 77908, 13: 101334, 14: 57748, 15: 82065, 16: 76646, 17: 79118, 18: 79339,
+  19: 65318, 20: 42431, 21: 35337, 22: 107679, 23: 108822, 24: 98460
+};
 
 // Premium options (3 & 4) priced per sqm from "חוברת תוספות ומחירים.xlsx" (שבילי פיתוח
 // וריצוף חוץ) — the two standard options stay included/₪0 regardless of area.
@@ -262,12 +304,11 @@ const BLINDS_COLORS = [
   { name: 'Meteorite', code: 'Meteorite Haze 31F', image: aluminumColorMeteorite }
 ];
 
-// Real exterior-plaster colour swatches (Extra White has no illustrative image in the brochure)
-const PLASTER_COLORS = [
-  { name: 'Extra White', image: null },
-  { name: 'אפור פישתן NGY 080', image: plasterNgy080Img },
-  { name: 'אפור עלווה NGY 070', image: plasterNgy070Img }
-];
+// Item 7 (updated live by Ido): the exterior-plaster color picker is removed entirely — there
+// is no tenant color choice for the base plaster. The only tenant-facing item here is the
+// optional Peles thermal render (שליכט תרמי) add-on.
+const PLASTER_THERMAL_RENDER_PRICE = 3500;
+const PLASTER_THERMAL_RENDER_VIDEO_NOTE = 'הסרטון המדגים את השליכט התרמי של פלס נמצא בתיקיית שינויי הדיירים של הפרויקט — יש לפנות למתאמת השינויים לקישור הצפייה.';
 
 // Prices from "חוברת תוספות ומחירים.xlsx": row 15 (תוספות חשמל, נק' מאור/שקע) covers both
 // light and power points at one price; row 16 (תוספות אינסטלציה, נק' מים/ניקוז) covers water.
@@ -299,31 +340,44 @@ function clearSavedDraft() {
   }
 }
 
+// Item 15: שערים וגדרות removed entirely. Item 7: טיח חוץ repurposed into a small thermal-render
+// add-on step. Items 10 & 11: two new steps (חימום תת רצפתי, מיזוג אוויר) before the electric
+// step, which item 12 renames. LAST_STEP_ID is used everywhere instead of a hardcoded number.
 const STEPS = [
   { id: 0, label: 'ברוכים הבאים', icon: '👋' },
   { id: 1, label: 'הסבר שלב ב\'', icon: '📝' },
   { id: 2, label: 'אלומיניום', icon: '🖼️' },
   { id: 3, label: 'מדרגות', icon: '🪜' },
   { id: 4, label: 'מעקות', icon: '⛓️' },
-  { id: 5, label: 'טיח חוץ', icon: '🎨' },
-  { id: 6, label: 'פרגולה', icon: '⛱️' },
-  { id: 7, label: 'דלתות חוץ', icon: '🚪' },
-  { id: 8, label: 'דלתות פנים', icon: '🚪' },
-  { id: 9, label: 'שביל כניסה', icon: '🛣️' },
-  { id: 10, label: 'שערים וגדרות', icon: '🚧' },
-  { id: 11, label: 'חשמל ומים', icon: '🔌' },
-  { id: 12, label: 'סיכום וחתימה', icon: '✍️' }
+  { id: 5, label: 'מטבח', icon: '🍳' },
+  { id: 6, label: 'תוספת טיח', icon: '🎨' },
+  { id: 7, label: 'פרגולה', icon: '⛱️' },
+  { id: 8, label: 'דלתות חוץ', icon: '🚪' },
+  { id: 9, label: 'דלתות פנים', icon: '🚪' },
+  { id: 10, label: 'שביל כניסה', icon: '🛣️' },
+  { id: 11, label: 'חימום תת רצפתי', icon: '🔥' },
+  { id: 12, label: 'מיזוג אוויר', icon: '❄️' },
+  { id: 13, label: 'שינויי חשמל אינסטלציה ובינוי', icon: '🔌' },
+  { id: 14, label: 'סיכום וחתימה', icon: '✍️' }
 ];
+const LAST_STEP_ID = STEPS[STEPS.length - 1].id;
 
 export default function App() {
   // Restore any in-progress draft saved locally so a refresh doesn't lose selections
   const saved = loadSavedDraft();
 
+  // Item 1 & 3: a "?coordinator=<villaNumber>" URL (opened from the admin panel's "עריכה" button
+  // per villa) puts the wizard in full-edit coordinator mode for that villa, loading its saved
+  // selections from Supabase. Regular tenants never see this — they log in via TenantAuthGate.
+  const coordinatorVillaParam = new URLSearchParams(window.location.search).get('coordinator');
+  const [isCoordinator] = useState(() => Boolean(coordinatorVillaParam));
+  const [coordinatorLoadStatus, setCoordinatorLoadStatus] = useState(() => coordinatorVillaParam ? 'loading' : 'idle'); // loading | ready | error
+
   // Global States
-  const [villaNumber, setVillaNumber] = useState(() => saved.villaNumber ?? '14');
+  const [villaNumber, setVillaNumber] = useState(() => coordinatorVillaParam ?? saved.villaNumber ?? '14');
   const [tenantName, setTenantName] = useState(() => saved.tenantName ?? 'ישראל ישראלי');
-  const [isLoggedIn, setIsLoggedIn] = useState(() => saved.isLoggedIn ?? false);
-  const [currentStep, setCurrentStep] = useState(() => saved.currentStep ?? 0);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(coordinatorVillaParam) || (saved.isLoggedIn ?? false));
+  const [currentStep, setCurrentStep] = useState(() => coordinatorVillaParam ? 1 : (saved.currentStep ?? 0));
 
   // Form selections state
   const [aluminum, setAluminum] = useState(() => saved.aluminum ?? {
@@ -338,26 +392,43 @@ export default function App() {
   });
 
   const [stairs, setStairs] = useState(() => saved.stairs ?? 1); // STAIRS_OPTIONS ID
-  const [railings, setRailings] = useState(() => saved.railings ?? 1); // RAILINGS_OPTIONS ID
+  const [stairsFlightQty, setStairsFlightQty] = useState(() => saved.stairsFlightQty ?? 1); // גרמים לפי מפלסים
 
-  const [plaster, setPlaster] = useState(() => saved.plaster ?? {
-    mainColor: 'Extra White (לבן)',
-    accentColor: 'אפור פישתן NGY080'
-  });
+  const [railings, setRailings] = useState(() => saved.railings ?? 1); // RAILINGS_OPTIONS ID
+  const [railingsQty, setRailingsQty] = useState(() => saved.railingsQty ?? 12); // מ"א
+  const [railingsColor, setRailingsColor] = useState(() => saved.railingsColor ?? 'שחור');
+
+  // Item 6: kitchen — plan approval, color, and cost (no standard price list was supplied,
+  // so cost is entered/edited by the coordinator once quoted with the kitchen supplier).
+  const [kitchen, setKitchen] = useState(() => saved.kitchen ?? { planApproved: false, color: '', cost: 0 });
+
+  // Item 7: plaster color picker removed; only the optional Peles thermal render add-on remains.
+  const [plasterThermalRender, setPlasterThermalRender] = useState(() => saved.plasterThermalRender ?? false);
 
   const [pergola, setPergola] = useState(() => saved.pergola ?? 1); // PERGOLA_OPTIONS ID
   const [pergolaQty, setPergolaQty] = useState(() => saved.pergolaQty ?? 20); // sqm
   const [extDoor, setExtDoor] = useState(() => saved.extDoor ?? 1); // EXT_DOORS_OPTIONS ID
 
+  // Item 9: flat per-unit pricing, one total door count for the villa instead of dry/wet split.
   const [intDoor, setIntDoor] = useState(() => saved.intDoor ?? {
     selectedOption: 'A', // INT_DOORS_OPTIONS ID ('A', 'B', 'C', 'D')
-    dryQty: 5,
-    wetQty: 2,
-    color: 'לבן'
+    doorCount: 7,
+    color: 'לבן',
+    mamadWoodLeaf: false,
+    mamadWoodLeafQty: 1
   });
 
   const [path, setPath] = useState(() => saved.path ?? 1); // PATH_OPTIONS ID
   const [pathQty, setPathQty] = useState(() => saved.pathQty ?? 40); // sqm, only relevant for priced (premium) options
+
+  // Item 10: underfloor heating (water-based infra only). sqm is editable by the coordinator only.
+  const [underfloorHeating, setUnderfloorHeating] = useState(() => saved.underfloorHeating ?? { selected: false, sqm: 0 });
+
+  // Item 11: aircon opt-out. When true the tenant declines the contractor's Tadiran package.
+  const [airconOptOut, setAirconOptOut] = useState(() => saved.airconOptOut ?? false);
+
+  // Item 14: free-text notes per step, shown grouped by section on the summary page after signing.
+  const [stepNotes, setStepNotes] = useState(() => saved.stepNotes ?? {});
 
   // Each point type holds an array of individual points, one note field per point,
   // so a tenant adding 3 power points can describe the location of each one separately.
@@ -403,7 +474,8 @@ export default function App() {
     if (isSubmitted) return;
     const draft = {
       villaNumber, tenantName, isLoggedIn, currentStep,
-      aluminum, stairs, railings, plaster, pergola, pergolaQty, extDoor, intDoor, path, pathQty, electricity
+      aluminum, stairs, stairsFlightQty, railings, railingsQty, railingsColor, kitchen, plasterThermalRender,
+      pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating, airconOptOut, stepNotes, electricity
     };
     try {
       window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
@@ -412,12 +484,74 @@ export default function App() {
     }
   }, [
     isSubmitted, villaNumber, tenantName, isLoggedIn, currentStep,
-    aluminum, stairs, railings, plaster, pergola, pergolaQty, extDoor, intDoor, path, pathQty, electricity
+    aluminum, stairs, stairsFlightQty, railings, railingsQty, railingsColor, kitchen, plasterThermalRender,
+    pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating, airconOptOut, stepNotes, electricity
   ]);
+
+  // Item 4: villas 1,2,4,9,20,21 are single-story — stairs step (id 3) is hidden entirely.
+  const isSingleStoryVilla = SINGLE_STORY_VILLAS.includes(Number(villaNumber));
+  const visibleSteps = STEPS.filter(s => !(s.id === 3 && isSingleStoryVilla));
+  const showStairsFlightQty = !isSingleStoryVilla && (STAIRS_FLIGHT_QTY_VILLAS === null || STAIRS_FLIGHT_QTY_VILLAS.includes(Number(villaNumber)));
+
+  // Item 1: tenants can only look (not touch) until the final signature page. Coordinators
+  // always have full edit access, on every step, for any villa.
+  const viewOnly = isLoggedIn && !isCoordinator && currentStep !== LAST_STEP_ID;
+
+  // Coordinator mode: pull this villa's previously-saved selections (if any) from Supabase and
+  // apply them to every piece of state, so the coordinator picks up exactly where the tenant
+  // (or a previous coordinator session) left off.
+  useEffect(() => {
+    if (!coordinatorVillaParam || !isSupabaseConfigured) return;
+    (async () => {
+      const { data, error } = await supabase
+        .from('villas')
+        .select('tenant_name, selections')
+        .eq('villa_number', Number(coordinatorVillaParam))
+        .maybeSingle();
+      if (error || !data) {
+        setCoordinatorLoadStatus('error');
+        return;
+      }
+      setTenantName(data.tenant_name ?? '');
+      const s = data.selections;
+      if (s && typeof s === 'object') {
+        if (s.aluminum) setAluminum(s.aluminum);
+        if (s.stairs !== undefined) setStairs(s.stairs);
+        if (s.stairsFlightQty !== undefined) setStairsFlightQty(s.stairsFlightQty);
+        if (s.railings !== undefined) setRailings(s.railings);
+        if (s.railingsQty !== undefined) setRailingsQty(s.railingsQty);
+        if (s.railingsColor) setRailingsColor(s.railingsColor);
+        if (s.kitchen) setKitchen(s.kitchen);
+        if (s.plasterThermalRender !== undefined) setPlasterThermalRender(s.plasterThermalRender);
+        if (s.pergola !== undefined) setPergola(s.pergola);
+        if (s.pergolaQty !== undefined) setPergolaQty(s.pergolaQty);
+        if (s.extDoor !== undefined) setExtDoor(s.extDoor);
+        if (s.intDoor) setIntDoor(s.intDoor);
+        if (s.path !== undefined) setPath(s.path);
+        if (s.pathQty !== undefined) setPathQty(s.pathQty);
+        if (s.underfloorHeating) setUnderfloorHeating(s.underfloorHeating);
+        if (s.airconOptOut !== undefined) setAirconOptOut(s.airconOptOut);
+        if (s.stepNotes) setStepNotes(s.stepNotes);
+        if (s.electricity) setElectricity(s.electricity);
+      }
+      setCoordinatorLoadStatus('ready');
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coordinatorVillaParam]);
+
+  // Coordinator-only: save progress to Supabase at any point, without needing signature/submit.
+  const handleCoordinatorSave = async () => {
+    if (!isSupabaseConfigured) return;
+    const selections = {
+      aluminum, stairs, stairsFlightQty, railings, railingsQty, railingsColor, kitchen, plasterThermalRender,
+      pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating, airconOptOut, stepNotes, electricity
+    };
+    await supabase.from('villas').update({ selections }).eq('villa_number', Number(villaNumber));
+  };
 
   // Reset signature confirmation when step changes
   useEffect(() => {
-    if (currentStep === 12) {
+    if (currentStep === LAST_STEP_ID) {
       const timer = setTimeout(() => {
         const canvas = canvasRef.current;
         if (canvas) {
@@ -434,12 +568,17 @@ export default function App() {
 
   // Handle interior door option change to set a default color from that option
   const handleIntDoorOptionChange = (optionId) => {
+    if (viewOnly) return;
     const option = INT_DOORS_OPTIONS.find(o => o.id === optionId);
     setIntDoor({
       ...intDoor,
       selectedOption: optionId,
       color: option.colors.length > 0 ? option.colors[0] : ''
     });
+  };
+
+  const updateStepNote = (stepId, note) => {
+    setStepNotes({ ...stepNotes, [stepId]: note });
   };
 
   const addElectricityPoint = (typeId) => {
@@ -529,46 +668,50 @@ export default function App() {
     const doorModel = ALUMINUM_MODELS.door.find(m => m.id === aluminum.selectedDoor);
     if (doorModel) subtotal += doorModel.price * aluminum.doorQty;
 
-    // Stairs
-    const stairsOpt = STAIRS_OPTIONS.find(o => o.id === stairs);
-    if (stairsOpt) subtotal += stairsOpt.price;
-
-    // Railings
-    const railingsOpt = RAILINGS_OPTIONS.find(o => o.id === railings);
-    if (railingsOpt) {
-      if (railingsOpt.price === null) unpricedItemsSelected = true;
-      else subtotal += railingsOpt.price;
+    // Stairs (only counted when the step actually applies to this villa)
+    if (!isSingleStoryVilla) {
+      const stairsOpt = STAIRS_OPTIONS.find(o => o.id === stairs);
+      if (stairsOpt) subtotal += stairsOpt.price;
     }
+
+    // Railings (priced per linear meter — item 5)
+    const railingsOpt = RAILINGS_OPTIONS.find(o => o.id === railings);
+    if (railingsOpt) subtotal += railingsOpt.price * railingsQty;
+
+    // Kitchen (item 6) — cost entered by the coordinator once quoted
+    if (kitchen.planApproved && kitchen.cost) subtotal += Number(kitchen.cost) || 0;
+
+    // Plaster thermal render add-on (item 7)
+    if (plasterThermalRender) subtotal += PLASTER_THERMAL_RENDER_PRICE;
 
     // Pergola (priced per sqm)
     const pergolaOpt = PERGOLA_OPTIONS.find(o => o.id === pergola);
-    if (pergolaOpt) {
-      if (pergolaOpt.price === null) unpricedItemsSelected = true;
-      else subtotal += pergolaOpt.price * pergolaQty;
-    }
+    if (pergolaOpt) subtotal += pergolaOpt.price * pergolaQty;
 
     // Exterior Doors
     const extDoorOpt = EXT_DOORS_OPTIONS.find(o => o.id === extDoor);
-    if (extDoorOpt) {
-      if (extDoorOpt.price === null) unpricedItemsSelected = true;
-      else subtotal += extDoorOpt.price;
-    }
+    if (extDoorOpt) subtotal += extDoorOpt.price;
 
-    // Interior Doors
+    // Interior Doors (item 9: flat per-unit delta × total door count, plus ממ"ד wood-leaf add-on)
     const intDoorOpt = INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption);
-    if (intDoorOpt) {
-      if (intDoorOpt.priceDry === null) {
-        unpricedItemsSelected = true;
-      } else {
-        subtotal += (intDoorOpt.priceDry * intDoor.dryQty) + (intDoorOpt.priceWet * intDoor.wetQty);
-      }
-    }
+    if (intDoorOpt) subtotal += intDoorOpt.price * intDoor.doorCount;
+    if (intDoor.mamadWoodLeaf) subtotal += MAMAD_WOOD_LEAF_PRICE * intDoor.mamadWoodLeafQty;
 
     // Entrance Path (premium options priced per sqm; standard options are ₪0 regardless)
     const pathOpt = PATH_OPTIONS.find(o => o.id === path);
     if (pathOpt) {
       if (pathOpt.price === null) unpricedItemsSelected = true;
       else subtotal += pathOpt.price * pathQty;
+    }
+
+    // Underfloor heating (item 10)
+    if (underfloorHeating.selected) subtotal += UNDERFLOOR_HEATING_PRICE_PER_SQM * (underfloorHeating.sqm || 0);
+
+    // Aircon (item 11) — lump sum per villa, excl. VAT, from the signed contract
+    const airconPrice = AIRCON_PRICING[Number(villaNumber)];
+    if (!airconOptOut) {
+      if (airconPrice == null) unpricedItemsSelected = true;
+      else subtotal += airconPrice;
     }
 
     // Electricity & Plumbing (each point type priced and quantified separately)
@@ -587,11 +730,13 @@ export default function App() {
   const pricing = getSelectionPricing();
 
   const handleNext = () => {
-    if (currentStep < 12) setCurrentStep(currentStep + 1);
+    const idx = visibleSteps.findIndex(s => s.id === currentStep);
+    if (idx >= 0 && idx < visibleSteps.length - 1) setCurrentStep(visibleSteps[idx + 1].id);
   };
 
   const handlePrev = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
+    const idx = visibleSteps.findIndex(s => s.id === currentStep);
+    if (idx > 0) setCurrentStep(visibleSteps[idx - 1].id);
   };
 
   const handleLogin = (e) => {
@@ -612,7 +757,11 @@ export default function App() {
       if (isSupabaseConfigured) {
         try {
           await supabase.rpc('submit_selections', {
-            payload: { aluminum, stairs, railings, plaster, pergola, pergolaQty, extDoor, intDoor, path, pathQty, electricity, pricing }
+            payload: {
+              aluminum, stairs, stairsFlightQty, railings, railingsQty, railingsColor, kitchen, plasterThermalRender,
+              pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating, airconOptOut, stepNotes,
+              electricity, pricing
+            }
           });
         } catch {
           // Selections still count as submitted locally even if the server write fails —
@@ -965,15 +1114,29 @@ export default function App() {
                 </div>
               ))}
             </div>
+
+            {/* Item 4: כמות גרמים לפי מפלסים — for multi-story villas only */}
+            {showStairsFlightQty && (
+              <div className="selection-details-panel" style={{ marginTop: '2rem' }}>
+                <div className="panel-row">
+                  <span className="panel-row-label">כמות גרמי מדרגות לפי מפלסים:</span>
+                  <div className="qty-stepper">
+                    <button className="qty-btn" disabled={viewOnly} onClick={() => setStairsFlightQty(Math.max(1, stairsFlightQty - 1))}>-</button>
+                    <input type="text" className="qty-value" readOnly value={stairsFlightQty} />
+                    <button className="qty-btn" disabled={viewOnly} onClick={() => setStairsFlightQty(stairsFlightQty + 1)}>+</button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         );
 
-      case 4: // Railings (real photos + technical drawing drill-down)
+      case 4: // Railings (real photos, colors, and per-linear-meter pricing)
         return (
           <div>
             <div className="page-title-section">
               <h2>מעקות</h2>
-              <p className="page-intro-text">בחירת מעקות ברזל לבית (בגוון שחור). לחצו על התמונה לצפייה בשרטוט הטכני.</p>
+              <p className="page-intro-text">בחירת דגם מעקה, גוון ומ"א. לחצו על התמונה לצפייה בשרטוט הטכני.</p>
             </div>
 
             <div className="options-grid">
@@ -992,7 +1155,7 @@ export default function App() {
                         {opt.id === 2 && (
                           <span style={{ fontSize: '0.8rem', color: 'var(--olive-dark)', cursor: 'pointer', textDecoration: 'underline' }} onClick={(e) => {
                             e.stopPropagation();
-                            setActiveModal({ title: `שרטוט טכני — ${opt.name}`, content: 'מפרט מעקה: לוחות שנטו 40/10 מ"מ, גובה חזית 108–120 ס"מ, עמוד אלומיניום מנוקב 50/50/3 מ"מ, פלטת עיגון לרצפה. גוון שחור אחיד לכל דגמי המעקות בפרויקט.', image: railingDrawingImg });
+                            setActiveModal({ title: `שרטוט טכני — ${opt.name}`, content: 'מפרט מעקה: לוחות שנטו 40/10 מ"מ, גובה חזית 108–120 ס"מ, עמוד אלומיניום מנוקב 50/50/3 מ"מ, פלטת עיגון לרצפה.', image: railingDrawingImg });
                           }}>
                             🔍 שרטוט טכני
                           </span>
@@ -1008,77 +1171,126 @@ export default function App() {
                     {opt.price === 0 ? (
                       <span className="price-badge standard">כלול בסטנדרט (₪0)</span>
                     ) : (
-                      <span className="price-badge unpriced">יש להוסיף מחיר — פנה לחברת הניהול</span>
+                      <span className="price-badge upgrade">₪{opt.price.toLocaleString()} / {opt.unit}</span>
                     )}
                   </div>
                 </div>
               ))}
             </div>
 
-            {RAILINGS_OPTIONS.find(o => o.id === railings)?.price === null && (
-              <div className="unpriced-message-box" style={{ marginTop: '2rem' }}>
-                <span>⚠</span> יש להוסיף מחיר – פנה לחברת הניהול
+            <div className="selection-details-panel" style={{ marginTop: '2rem' }}>
+              <div className="panel-row">
+                <span className="panel-row-label">אורך המעקה המשוער (במ"א):</span>
+                <div className="qty-stepper">
+                  <button className="qty-btn" onClick={() => setRailingsQty(Math.max(1, railingsQty - 1))}>-</button>
+                  <input type="text" className="qty-value" readOnly value={railingsQty} />
+                  <button className="qty-btn" onClick={() => setRailingsQty(railingsQty + 1)}>+</button>
+                </div>
               </div>
-            )}
 
+              <div className="swatch-group" style={{ marginTop: '1.5rem' }}>
+                <div className="swatch-label">גוון מעקה:</div>
+                <div className="color-photo-grid" style={{ marginTop: '0.5rem' }}>
+                  {RAILING_COLORS.map(color => (
+                    <button
+                      key={color.name}
+                      type="button"
+                      className={`color-photo-btn ${railingsColor === color.name ? 'active' : ''}`}
+                      onClick={() => setRailingsColor(color.name)}
+                    >
+                      <div className="color-photo-img" style={{ backgroundColor: color.hex, border: '1px solid var(--line)' }} />
+                      <span className="color-photo-label">{color.name}</span>
+                      <span className="muted-text" style={{ fontSize: '0.75rem' }}>{color.code}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         );
 
-      case 5: // Exterior Plaster (Double selection, clean color chips)
+      case 5: // Kitchen (item 6) — plan approval, color, cost
         return (
           <div>
             <div className="page-title-section">
-              <h2>גוון טיח חוץ</h2>
-              <p className="page-intro-text">בחירת צבעים לקירות הבית ולבליטות האדריכליות</p>
+              <h2>מטבח</h2>
+              <p className="page-intro-text">אישור תכנית מטבח, גוון ועלות</p>
             </div>
 
-            <div className="selection-details-panel" style={{ marginTop: '2rem' }}>
-              <div className="swatch-group" style={{ marginBottom: '2.5rem' }}>
-                <div className="swatch-label" style={{ fontSize: '1.1rem' }}>גוון קירות חוץ ראשיים:</div>
-                <div className="color-photo-grid" style={{ marginTop: '0.5rem' }}>
-                  {PLASTER_COLORS.map(color => (
-                    <button
-                      key={color.name}
-                      type="button"
-                      className={`color-photo-btn ${plaster.mainColor === color.name ? 'active' : ''}`}
-                      onClick={() => setPlaster({ ...plaster, mainColor: color.name })}
-                    >
-                      {color.image ? (
-                        <img src={color.image} alt={color.name} className="color-photo-img zoomable-img" onClick={(e) => openLightbox(e, color.image, color.name)} />
-                      ) : (
-                        <div className="color-photo-img color-photo-blank" />
-                      )}
-                      <span className="color-photo-label">{color.name}</span>
-                    </button>
-                  ))}
-                </div>
+            <div className="highlight-box green">
+              <span>ℹ</span> תכנית המטבח המפורטת נמצאת בתיקיית התכניות של הוילה (מגרש {villaNumber}). יש לתאם עם מתאמת השינויים לצפייה ואישור.
+            </div>
+
+            <label className="checkbox-container" style={{ marginTop: '1.5rem', backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
+              <input
+                type="checkbox"
+                checked={kitchen.planApproved}
+                onChange={(e) => setKitchen({ ...kitchen, planApproved: e.target.checked })}
+              />
+              <span className="checkbox-text">אני מאשר/ת את תכנית המטבח כפי שהוצגה</span>
+            </label>
+
+            <div className="selection-details-panel" style={{ marginTop: '1.5rem' }}>
+              <div className="swatch-group">
+                <div className="swatch-label">גוון מטבח שנבחר:</div>
+                <input
+                  type="text"
+                  className="form-control"
+                  style={{ marginTop: '0.5rem' }}
+                  placeholder="לדוגמה: אפור מט / לבן high-gloss / אלון טבעי"
+                  value={kitchen.color}
+                  onChange={(e) => setKitchen({ ...kitchen, color: e.target.value })}
+                />
               </div>
 
-              <div className="swatch-group">
-                <div className="swatch-label" style={{ fontSize: '1.1rem' }}>גוון בליטות ועיטורים ארכיטקטוניים:</div>
-                <div className="color-photo-grid" style={{ marginTop: '0.5rem' }}>
-                  {PLASTER_COLORS.map(color => (
-                    <button
-                      key={color.name}
-                      type="button"
-                      className={`color-photo-btn ${plaster.accentColor === color.name ? 'active' : ''}`}
-                      onClick={() => setPlaster({ ...plaster, accentColor: color.name })}
-                    >
-                      {color.image ? (
-                        <img src={color.image} alt={color.name} className="color-photo-img zoomable-img" onClick={(e) => openLightbox(e, color.image, color.name)} />
-                      ) : (
-                        <div className="color-photo-img color-photo-blank" />
-                      )}
-                      <span className="color-photo-label">{color.name}</span>
-                    </button>
-                  ))}
-                </div>
+              <div className="panel-row" style={{ marginTop: '1.25rem' }}>
+                <span className="panel-row-label">עלות מטבח (נקבעת ע"י מתאמת השינויים מול ספק המטבחים):</span>
+                <input
+                  type="number"
+                  className="form-control"
+                  style={{ maxWidth: '160px' }}
+                  value={kitchen.cost}
+                  disabled={!isCoordinator}
+                  onChange={(e) => setKitchen({ ...kitchen, cost: e.target.value })}
+                />
               </div>
+              {!isCoordinator && (
+                <p className="muted-text" style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>שדה העלות נקבע ומעודכן ע"י מתאמת שינויי הדיירים בלבד.</p>
+              )}
             </div>
           </div>
         );
 
-      case 6: // Pergola (priced per sqm)
+      case 6: // Plaster add-on (item 7: color picker removed, only the thermal render option remains)
+        return (
+          <div>
+            <div className="page-title-section">
+              <h2>תוספת טיח</h2>
+              <p className="page-intro-text">שליכט תרמי לקירות החוץ (חברת פלס)</p>
+            </div>
+
+            <label className="checkbox-container" style={{ backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
+              <input
+                type="checkbox"
+                checked={plasterThermalRender}
+                onChange={(e) => setPlasterThermalRender(e.target.checked)}
+              />
+              <span className="checkbox-text">
+                ברצוני להוסיף שליכט תרמי של חברת פלס (תוספת ₪{PLASTER_THERMAL_RENDER_PRICE.toLocaleString()} לדירה + מע"מ)
+              </span>
+            </label>
+
+            <div className="highlight-box green" style={{ marginTop: '1.5rem' }}>
+              <span>ℹ</span> {PLASTER_THERMAL_RENDER_VIDEO_NOTE}
+            </div>
+
+            <div className="highlight-box copper" style={{ marginTop: '1rem' }}>
+              <span>🎨</span> גוון הטיח: השליכט הטרמי (במידה ונבחר) יהיה בגרגור 200. אין אפשרות בחירת גוון לטיח החוץ הבסיסי.
+            </div>
+          </div>
+        );
+
+      case 7: // Pergola (priced per sqm)
         return (
           <div>
             <div className="page-title-section">
@@ -1113,7 +1325,11 @@ export default function App() {
                     <p className="option-description" style={{ fontSize: '0.9rem' }}>{opt.desc}</p>
                   </div>
                   <div className="option-card-footer">
-                    <span className="price-badge upgrade">₪{opt.price.toLocaleString()} / {opt.unit}</span>
+                    {opt.price === 0 ? (
+                      <span className="price-badge standard">כלול בסטנדרט (₪0)</span>
+                    ) : (
+                      <span className="price-badge upgrade">₪{opt.price.toLocaleString()} / {opt.unit}</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1132,7 +1348,7 @@ export default function App() {
           </div>
         );
 
-      case 7: // Exterior Doors (real photos per model, drill-down full spec)
+      case 8: // Exterior Doors (real photos per model, drill-down full spec)
         return (
           <div>
             <div className="page-title-section">
@@ -1159,6 +1375,10 @@ export default function App() {
                     <p className="option-description" style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>
                       {opt.desc}
                     </p>
+                    {/* Item 8: contact details per door supplier rep — fill in once received */}
+                    <p className="muted-text" style={{ fontSize: '0.8rem' }}>
+                      לשאלות מול נציג הספק: {opt.contactName || 'יעודכן ע"י מתאמת השינויים'} {opt.contactPhone && `· ${opt.contactPhone}`}
+                    </p>
                   </div>
 
                   <div className="option-card-footer" style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1173,7 +1393,11 @@ export default function App() {
                     >
                       ℹ למידע נוסף
                     </button>
-                    <span className="price-badge upgrade">₪{opt.price.toLocaleString()}</span>
+                    {opt.price === 0 ? (
+                      <span className="price-badge standard">כלול בסטנדרט (₪0)</span>
+                    ) : (
+                      <span className="price-badge upgrade">₪{opt.price.toLocaleString()} + מע"מ</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1181,17 +1405,17 @@ export default function App() {
           </div>
         );
 
-      case 8: // Interior Doors (Verified Hamadia specs, interactive modal)
+      case 9: // Interior Doors (item 9: flat per-unit pricing, total door count, ממ"ד wood-leaf add-on)
         return (
           <div>
             <div className="page-title-section">
               <h2>דלתות פנים</h2>
-              <p className="page-intro-text">בחירת דלתות מבית חמדיה ורב-בריח. לחץ "ℹ מפרט מלא" לפתיחת פרטי הדגם.</p>
+              <p className="page-intro-text">ספק: חברת חמדיה. לחץ "ℹ מפרט מלא" לפתיחת פרטי הדגם.</p>
             </div>
 
             <div className="options-grid">
               {INT_DOORS_OPTIONS.map(opt => (
-                <div 
+                <div
                   key={opt.id}
                   className={`option-card ${intDoor.selectedOption === opt.id ? 'selected' : ''}`}
                   onClick={() => handleIntDoorOptionChange(opt.id)}
@@ -1208,15 +1432,15 @@ export default function App() {
                     <div className="option-card-header" style={{ marginTop: '0.5rem' }}>
                       <div>
                         <span className="option-title" style={{ display: 'block', fontSize: '1.15rem' }}>{opt.name}</span>
-                        <span className="muted-text" style={{ fontSize: '0.8rem' }}>יצרן: {opt.supplier}</span>
+                        <span className="muted-text" style={{ fontSize: '0.8rem' }}>ספק: {opt.supplier}</span>
                       </div>
                       <div className="select-badge">
                         {intDoor.selectedOption === opt.id && '✓'}
                       </div>
                     </div>
-                    
+
                     <p className="option-description" style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>{opt.desc}</p>
-                    
+
                     {opt.id === 'C' && (
                       <div className="price-badge unpriced" style={{ width: '100%', textAlign: 'center', marginBottom: '0.5rem', fontSize: '0.8rem' }}>
                         ⚠ אופציה ג' מצריכה הגדלת פתחי בנייה ב-5 ס"מ
@@ -1225,9 +1449,9 @@ export default function App() {
                   </div>
 
                   <div className="option-card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <button 
-                      type="button" 
-                      className="btn btn-secondary" 
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
                       style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1236,36 +1460,24 @@ export default function App() {
                     >
                       ℹ מפרט מלא
                     </button>
-                    {opt.priceDry !== null ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', alignItems: 'flex-end' }}>
-                        <span className="price-badge upgrade" style={{ fontSize: '0.8rem' }}>יבש: ₪{opt.priceDry.toLocaleString()}</span>
-                        <span className="price-badge upgrade" style={{ fontSize: '0.8rem' }}>רטוב: ₪{opt.priceWet.toLocaleString()}</span>
-                      </div>
+                    {opt.price === 0 ? (
+                      <span className="price-badge standard">כלול בסטנדרט (₪0)</span>
                     ) : (
-                      <span className="price-badge unpriced" style={{ fontSize: '0.8rem' }}>יש להוסיף מחיר — פנה לחברת הניהול</span>
+                      <span className="price-badge upgrade" style={{ fontSize: '0.8rem' }}>+ ₪{opt.price.toLocaleString()} / יח\'</span>
                     )}
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Quantities & Color selection */}
+            {/* Item 9: total door count for the villa, plus ממ"ד wood-leaf add-on */}
             <div className="selection-details-panel" style={{ marginBottom: '1.5rem' }}>
               <div className="panel-row">
-                <span className="panel-row-label">כמות דלתות חדר יבש (שינה, סלון):</span>
+                <span className="panel-row-label">כמות דלתות פנים בווילה:</span>
                 <div className="qty-stepper">
-                  <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, dryQty: Math.max(0, intDoor.dryQty - 1) })}>-</button>
-                  <input type="text" className="qty-value" readOnly value={intDoor.dryQty} />
-                  <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, dryQty: intDoor.dryQty + 1 })}>+</button>
-                </div>
-              </div>
-              
-              <div className="panel-row">
-                <span className="panel-row-label">כמות דלתות חדר רטוב (מקלחת, שירותים):</span>
-                <div className="qty-stepper">
-                  <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, wetQty: Math.max(0, intDoor.wetQty - 1) })}>-</button>
-                  <input type="text" className="qty-value" readOnly value={intDoor.wetQty} />
-                  <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, wetQty: intDoor.wetQty + 1 })}>+</button>
+                  <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, doorCount: Math.max(0, intDoor.doorCount - 1) })}>-</button>
+                  <input type="text" className="qty-value" readOnly value={intDoor.doorCount} />
+                  <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, doorCount: intDoor.doorCount + 1 })}>+</button>
                 </div>
               </div>
 
@@ -1274,8 +1486,8 @@ export default function App() {
                   <div className="swatch-label">בחירת גוון דלת:</div>
                   <div className="swatch-items" style={{ marginTop: '0.5rem' }}>
                     {INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption).colors.map(color => (
-                      <button 
-                        key={color} 
+                      <button
+                        key={color}
                         type="button"
                         className={`swatch-btn ${intDoor.color === color ? 'active' : ''}`}
                         onClick={() => setIntDoor({ ...intDoor, color: color })}
@@ -1289,6 +1501,27 @@ export default function App() {
                   </div>
                 </div>
               )}
+
+              <label className="checkbox-container" style={{ marginTop: '1.5rem' }}>
+                <input
+                  type="checkbox"
+                  checked={intDoor.mamadWoodLeaf}
+                  onChange={(e) => setIntDoor({ ...intDoor, mamadWoodLeaf: e.target.checked })}
+                />
+                <span className="checkbox-text">
+                  תוספת כנף דלת עץ מעל דלת הממ"ד התקנית (₪{MAMAD_WOOD_LEAF_PRICE.toLocaleString()} לכנף)
+                </span>
+              </label>
+              {intDoor.mamadWoodLeaf && (
+                <div className="panel-row" style={{ marginTop: '0.75rem' }}>
+                  <span className="panel-row-label">כמות כנפי עץ לממ"ד:</span>
+                  <div className="qty-stepper">
+                    <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, mamadWoodLeafQty: Math.max(1, intDoor.mamadWoodLeafQty - 1) })}>-</button>
+                    <input type="text" className="qty-value" readOnly value={intDoor.mamadWoodLeafQty} />
+                    <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, mamadWoodLeafQty: intDoor.mamadWoodLeafQty + 1 })}>+</button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* General Installation block caveat */}
@@ -1298,7 +1531,7 @@ export default function App() {
           </div>
         );
 
-      case 9: // Entrance Path (with visual representations)
+      case 10: // Entrance Path (with visual representations)
         return (
           <div>
             <div className="page-title-section">
@@ -1350,73 +1583,95 @@ export default function App() {
           </div>
         );
 
-      case 10: // Gates & Fences (Info only, beautiful vector layout)
+      case 11: // Underfloor heating (item 10) — new, before the electric/plumbing step
         return (
           <div>
             <div className="page-title-section">
-              <h2>שערים וגדרות</h2>
-              <p className="page-intro-text">מידע טכני בלבד לגבי שערים וגדרות שנבחרו עבור כלל הפרויקט</p>
+              <h2>חימום תת רצפתי</h2>
+              <p className="page-intro-text">הכנה לחימום תת רצפתי על בסיס מים — הכנה מתחת לרצפה בלבד</p>
             </div>
 
-            <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem' }}>
-              על מנת לשמור על חזות אחידה ואסתטית של הפרויקט, נבחר דגם גדר אחיד עבור כלל הווילות בפרויקט.
-            </p>
+            <label className="checkbox-container" style={{ backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
+              <input
+                type="checkbox"
+                checked={underfloorHeating.selected}
+                onChange={(e) => setUnderfloorHeating({ ...underfloorHeating, selected: e.target.checked })}
+              />
+              <span className="checkbox-text">
+                ברצוני בהכנה לחימום תת רצפתי (₪{UNDERFLOOR_HEATING_PRICE_PER_SQM.toLocaleString()} למ"ר + מע"מ)
+              </span>
+            </label>
 
-            <div className="static-spec-container">
-              <img src={gatePhotoImg} alt="שער וגדר אלומיניום שחור - טרלידור" className="card-preview-image zoomable-img" style={{ height: '260px' }} onClick={(e) => openLightbox(e, gatePhotoImg, 'שער וגדר אלומיניום שחור - טרלידור')} />
-              <button
-                type="button"
-                className="btn btn-secondary"
-                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', marginTop: '0.75rem' }}
-                onClick={() => setActiveModal({ title: 'שרטוט טכני — שער וגדר טרלידור', content: 'גדר אלומיניום שלבים 60/24, חזית 60 ס"מ, מרווח אור 10 מ"מ. עמוד אלומיניום מנוקב 50/50/3 מ"מ המעוגן בפלטה לרצפה. גובה כולל כ-106 ס"מ.', image: gateDrawingImg })}
-              >
-                🔍 שרטוט טכני מלא
-              </button>
+            <div className="highlight-box copper" style={{ marginTop: '1rem' }}>
+              <span>ℹ</span> התוספת הינה עבור הכנת תשתית מתחת לרצפה בלבד (על בסיס מים). אינה כוללת את מערכת החימום עצמה.
+            </div>
 
-              <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.5rem', marginTop: '1.5rem', marginBottom: '1rem' }}>מפרט גדר ושערים (ספק: טרלידור)</h3>
-              <p style={{ fontWeight: 'bold', marginBottom: '1.25rem', color: 'var(--olive-dark)' }}>
-                גדר אלומיניום שלבים 60/24, גובה חזית 60 ס"מ, מרווח אור 10 מ"מ, כולל עמודי 50/50 מ"מ המעוגנים עם פלטה לקרקע.
-              </p>
-              
-              <div className="static-spec-item">
-                <div>
-                  <strong>שער הולכי רגל:</strong> כולל מנעול חשמלי לפתיחה מתוך הבית וידית מעוצבת דו-צדדית.
+            {underfloorHeating.selected && (
+              <div className="selection-details-panel" style={{ marginTop: '1.5rem' }}>
+                <div className="panel-row">
+                  <span className="panel-row-label">שטח לחימום (במ"ר) — נקבע ע"י מתאמת השינויים בלבד:</span>
+                  <div className="qty-stepper">
+                    <button className="qty-btn" disabled={!isCoordinator} onClick={() => setUnderfloorHeating({ ...underfloorHeating, sqm: Math.max(0, underfloorHeating.sqm - 1) })}>-</button>
+                    <input type="text" className="qty-value" readOnly value={underfloorHeating.sqm} />
+                    <button className="qty-btn" disabled={!isCoordinator} onClick={() => setUnderfloorHeating({ ...underfloorHeating, sqm: underfloorHeating.sqm + 1 })}>+</button>
+                  </div>
                 </div>
+                {!isCoordinator && (
+                  <p className="muted-text" style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>שדה זה נקבע ע"י מתאמת שינויי הדיירים לאחר מדידה בשטח.</p>
+                )}
               </div>
-              <div className="static-spec-item">
-                <div>
-                  <strong>שער חניה נגרר (כנף על כנף):</strong> סט של 2 יחידות שער, מנוע גרירה חשמלי חזק, עיניים פוטו-אלקטריות לבטיחות ומניעת סגירה על רכב, מנורה מהבהבת בעת פעולה, ועמוד יציקה RHS.
-                </div>
-              </div>
-              <div className="static-spec-item">
-                <div>
-                  <strong>שער פילר אשפה:</strong> שער אלומיניום קטן ומעוצב לגישה נוחה לפחי האשפה.
-                </div>
-              </div>
-              <div className="static-spec-item">
-                <div>
-                  <strong>גדר חזית וגדר היקפית:</strong> שלמות אסתטית לכל היקף המגרש בדגם התואם לשערים.
-                </div>
-              </div>
-              <div className="static-spec-item">
-                <div>
-                  <strong>שערי פילר:</strong> מים, חשמל ותקשורת - חיפוי אחיד לארונות המונים בחזית המגרש.
-                </div>
-              </div>
-            </div>
-            
-            <div className="highlight-box green" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span>ℹ</span> דגם זה מבוצע כחלק מהפיתוח הסביבתי הכולל של הפרויקט ואין צורך בבחירה נוספת מצד הדייר.
-            </div>
+            )}
           </div>
         );
 
-      case 11: // Electricity & Plumbing
+      case 12: // Aircon — Tadiran (item 11) — new, before the electric/plumbing step
         return (
           <div>
             <div className="page-title-section">
-              <h2>שינויי חשמל ואינסטלציה</h2>
-              <p className="page-intro-text">הוספה או העתקה של נקודות חשמל ומים במבנה</p>
+              <h2>מיזוג אוויר</h2>
+              <p className="page-intro-text">ערכת מיזוג אוויר תדיראן — מחיר פאושל לוילה, לפי הסכם עבודות קבלניות</p>
+            </div>
+
+            <div className="highlight-box green">
+              <span>ℹ</span> פירוט הדגמים, התפוקה (BTU) והכמות ליחידה נמצא במסמך המצורף לוילה שלכם בתיקיית שינויי הדיירים. ניתן לפנות למתאמת השינויים לצפייה.
+            </div>
+
+            <div className="selection-details-panel" style={{ marginTop: '1.5rem' }}>
+              <div className="panel-row">
+                <span className="panel-row-label">מחיר פאושל לוילה {villaNumber} (לא כולל מע"מ):</span>
+                <strong>
+                  {AIRCON_PRICING[Number(villaNumber)] != null
+                    ? `₪${AIRCON_PRICING[Number(villaNumber)].toLocaleString()}`
+                    : 'לא סופק מחיר לוילה זו — פנה למתאמת השינויים'}
+                </strong>
+              </div>
+            </div>
+
+            <label className="checkbox-container" style={{ marginTop: '1.5rem' }}>
+              <input
+                type="checkbox"
+                checked={airconOptOut}
+                onChange={(e) => setAirconOptOut(e.target.checked)}
+              />
+              <span className="checkbox-text">
+                אינני מעוניין לבצע את ערכת מיזוג האוויר דרך הקבלן
+              </span>
+            </label>
+
+            {airconOptOut && (
+              <div className="warning-alert-banner" style={{ marginTop: '1rem' }}>
+                <span>⚠</span> יש לחתום על נספח ביטול מיזוג אוויר להסכם — פנה למתאמת השינויים לקבלת קישור החתימה.
+              </div>
+            )}
+          </div>
+        );
+
+      case 13: // Electricity & Plumbing (item 12: renamed)
+        return (
+          <div>
+            <div className="page-title-section">
+              <h2>שינויי חשמל אינסטלציה ובינוי</h2>
+              <p className="page-intro-text">הוספה או העתקה של נקודות חשמל ומים במבנה. יעודכן לאחר פגישה עם מתאמת שינויים.</p>
             </div>
 
             <label className="checkbox-container" style={{ margin: '2rem 0', backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
@@ -1478,7 +1733,7 @@ export default function App() {
           </div>
         );
 
-      case 12: // Summary & Digital Signature
+      case 14: // Summary & Digital Signature (item 14: grouped notes shown here)
         return (
           <div>
             <div className="page-title-section">
@@ -1490,7 +1745,7 @@ export default function App() {
             {pricing.unpricedItemsSelected && (
               <div className="warning-alert-banner">
                 <span>⚠</span>
-                ישנם פריטים שנבחרו ללא מחיר בחוברת – יש לפנות לחברת הניהול להשלמת המחיר לפני חתימה סופית.
+                ישנם פריטים שנבחרו ללא מחיר סופי (למשל וילה ללא מחיר מיזוג אוויר) – יש לפנות למתאמת השינויים להשלמת המחיר לפני חתימה סופית.
               </div>
             )}
 
@@ -1536,36 +1791,50 @@ export default function App() {
                     </td>
                   </tr>
 
-                  {/* Stairs */}
-                  <tr>
-                    <td><strong>מדרגות</strong></td>
-                    <td>{STAIRS_OPTIONS.find(o => o.id === stairs)?.name}</td>
-                    <td>—</td>
-                    <td>1</td>
-                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      {STAIRS_OPTIONS.find(o => o.id === stairs)?.price === 0 ? 'כלול בסטנדרט' : `₪${STAIRS_OPTIONS.find(o => o.id === stairs)?.price.toLocaleString()}`}
-                    </td>
-                  </tr>
+                  {/* Stairs (only when relevant to this villa) */}
+                  {!isSingleStoryVilla && (
+                    <tr>
+                      <td><strong>מדרגות</strong></td>
+                      <td>{STAIRS_OPTIONS.find(o => o.id === stairs)?.name}</td>
+                      <td>{showStairsFlightQty ? `${stairsFlightQty} גרמים` : '—'}</td>
+                      <td>1</td>
+                      <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
+                        {STAIRS_OPTIONS.find(o => o.id === stairs)?.price === 0 ? 'כלול בסטנדרט' : `₪${STAIRS_OPTIONS.find(o => o.id === stairs)?.price.toLocaleString()}`}
+                      </td>
+                    </tr>
+                  )}
 
                   {/* Railings */}
                   <tr>
                     <td><strong>מעקות</strong></td>
                     <td>{RAILINGS_OPTIONS.find(o => o.id === railings)?.name}</td>
-                    <td>גוון שחור</td>
-                    <td>1</td>
-                    <td style={{ textAlign: 'left', fontWeight: 'bold', color: RAILINGS_OPTIONS.find(o => o.id === railings)?.price === null ? 'var(--red-text)' : 'inherit' }}>
-                      {RAILINGS_OPTIONS.find(o => o.id === railings)?.price === 0 ? 'כלול בסטנדרט' : 
-                       RAILINGS_OPTIONS.find(o => o.id === railings)?.price === null ? 'יש להוסיף מחיר – פנה לחברת הניהול' : `₪${RAILINGS_OPTIONS.find(o => o.id === railings)?.price}`}
+                    <td>גוון: {railingsColor}</td>
+                    <td>{railingsQty} מ"א</td>
+                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
+                      {RAILINGS_OPTIONS.find(o => o.id === railings)?.price === 0 ? 'כלול בסטנדרט' : `₪${(RAILINGS_OPTIONS.find(o => o.id === railings)?.price * railingsQty).toLocaleString()}`}
                     </td>
                   </tr>
 
-                  {/* Plaster */}
+                  {/* Kitchen */}
                   <tr>
-                    <td><strong>גוון טיח חוץ</strong></td>
-                    <td>קירות: {plaster.mainColor}</td>
-                    <td>בליטות: {plaster.accentColor}</td>
+                    <td><strong>מטבח</strong></td>
+                    <td>{kitchen.planApproved ? 'תכנית מאושרת' : 'טרם אושרה'}</td>
+                    <td>גוון: {kitchen.color || 'לא נבחר'}</td>
                     <td>—</td>
-                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>כלול בסטנדרט</td>
+                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
+                      {kitchen.cost ? `₪${Number(kitchen.cost).toLocaleString()}` : 'יעודכן ע"י מתאמת השינויים'}
+                    </td>
+                  </tr>
+
+                  {/* Plaster thermal render add-on */}
+                  <tr>
+                    <td><strong>תוספת טיח (שליכט תרמי)</strong></td>
+                    <td>{plasterThermalRender ? 'כן — שליכט תרמי פלס' : 'ללא תוספת'}</td>
+                    <td>גרגור 200</td>
+                    <td>—</td>
+                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
+                      {plasterThermalRender ? `₪${PLASTER_THERMAL_RENDER_PRICE.toLocaleString()}` : 'כלול בסטנדרט'}
+                    </td>
                   </tr>
 
                   {/* Pergola */}
@@ -1575,7 +1844,7 @@ export default function App() {
                     <td>—</td>
                     <td>{pergolaQty} מ"ר</td>
                     <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      ₪{((PERGOLA_OPTIONS.find(o => o.id === pergola)?.price || 0) * pergolaQty).toLocaleString()}
+                      {PERGOLA_OPTIONS.find(o => o.id === pergola)?.price === 0 ? 'כלול בסטנדרט' : `₪${((PERGOLA_OPTIONS.find(o => o.id === pergola)?.price || 0) * pergolaQty).toLocaleString()}`}
                     </td>
                   </tr>
 
@@ -1586,7 +1855,7 @@ export default function App() {
                     <td>—</td>
                     <td>1</td>
                     <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      ₪{(EXT_DOORS_OPTIONS.find(o => o.id === extDoor)?.price || 0).toLocaleString()}
+                      {EXT_DOORS_OPTIONS.find(o => o.id === extDoor)?.price === 0 ? 'כלול בסטנדרט' : `₪${(EXT_DOORS_OPTIONS.find(o => o.id === extDoor)?.price || 0).toLocaleString()}`}
                     </td>
                   </tr>
 
@@ -1594,12 +1863,16 @@ export default function App() {
                   <tr>
                     <td><strong>דלתות פנים</strong></td>
                     <td>{INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.name}</td>
-                    <td>גוון: {intDoor.color || 'ללא בחירה'} · ספק: {INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.supplier}</td>
-                    <td>{intDoor.dryQty} יבש / {intDoor.wetQty} רטוב</td>
-                    <td style={{ textAlign: 'left', fontWeight: 'bold', color: INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.priceDry === null ? 'var(--red-text)' : 'inherit' }}>
-                      {INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.priceDry === null ? 'יש להוסיף מחיר – פנה לחברת הניהול' :
-                       `₪${((INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.priceDry * intDoor.dryQty) + 
-                             (INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.priceWet * intDoor.wetQty)).toLocaleString()}`}
+                    <td>
+                      גוון: {intDoor.color || 'ללא בחירה'} · ספק: {INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.supplier}
+                      {intDoor.mamadWoodLeaf && ` · תוספת עץ לממ"ד (${intDoor.mamadWoodLeafQty})`}
+                    </td>
+                    <td>{intDoor.doorCount} יח'</td>
+                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
+                      ₪{(
+                        (INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.price || 0) * intDoor.doorCount +
+                        (intDoor.mamadWoodLeaf ? MAMAD_WOOD_LEAF_PRICE * intDoor.mamadWoodLeafQty : 0)
+                      ).toLocaleString()}
                     </td>
                   </tr>
 
@@ -1613,6 +1886,28 @@ export default function App() {
                       {PATH_OPTIONS.find(o => o.id === path)?.price === 0
                         ? 'כלול בסטנדרט'
                         : `₪${((PATH_OPTIONS.find(o => o.id === path)?.price || 0) * pathQty).toLocaleString()}`}
+                    </td>
+                  </tr>
+
+                  {/* Underfloor heating */}
+                  <tr>
+                    <td><strong>חימום תת רצפתי</strong></td>
+                    <td>{underfloorHeating.selected ? 'הכנה על בסיס מים' : 'ללא'}</td>
+                    <td>—</td>
+                    <td>{underfloorHeating.selected ? `${underfloorHeating.sqm} מ"ר` : '—'}</td>
+                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
+                      {underfloorHeating.selected ? `₪${(UNDERFLOOR_HEATING_PRICE_PER_SQM * (underfloorHeating.sqm || 0)).toLocaleString()}` : '₪0'}
+                    </td>
+                  </tr>
+
+                  {/* Aircon */}
+                  <tr>
+                    <td><strong>מיזוג אוויר</strong></td>
+                    <td>{airconOptOut ? 'לא דרך הקבלן' : 'ערכת תדיראן (קבלן)'}</td>
+                    <td>—</td>
+                    <td>1</td>
+                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
+                      {airconOptOut ? '₪0' : (AIRCON_PRICING[Number(villaNumber)] != null ? `₪${AIRCON_PRICING[Number(villaNumber)].toLocaleString()}` : 'יש להשלים מחיר')}
                     </td>
                   </tr>
 
@@ -1631,7 +1926,7 @@ export default function App() {
                     ))
                   ) : (
                     <tr>
-                      <td><strong>חשמל ומים</strong></td>
+                      <td><strong>שינויי חשמל אינסטלציה ובינוי</strong></td>
                       <td>ללא שינויים</td>
                       <td>—</td>
                       <td>—</td>
@@ -1661,17 +1956,40 @@ export default function App() {
               </div>
               {pricing.unpricedItemsSelected && (
                 <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: '0.5rem', lineHeight: '1.3' }}>
-                  * הסכום אינו כולל את הפריטים המסומנים ב-"יש להוסיף מחיר – פנה לחברת הניהול".
+                  * הסכום אינו כולל פריטים שנבחרו ללא מחיר סופי — יש לפנות למתאמת השינויים.
                 </div>
               )}
+            </div>
+
+            {/* Item 14: notes, grouped by the section they were written in */}
+            {Object.entries(stepNotes).some(([, note]) => note && note.trim()) && (
+              <div className="selection-details-panel" style={{ marginTop: '2rem' }}>
+                <h3 style={{ marginBottom: '1rem', fontSize: '1.2rem', fontFamily: 'var(--font-serif)' }}>הערות הדייר, לפי פרק:</h3>
+                {STEPS.filter(s => stepNotes[s.id] && stepNotes[s.id].trim()).map(s => (
+                  <div key={s.id} className="panel-row" style={{ flexDirection: 'column', alignItems: 'stretch', marginBottom: '0.75rem' }}>
+                    <strong>{s.label}:</strong>
+                    <span>{stepNotes[s.id]}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="selection-details-panel" style={{ marginTop: '1.5rem' }}>
+              <div className="swatch-label">הערה נוספת לפרק הסיכום:</div>
+              <textarea
+                className="form-control"
+                style={{ width: '100%', minHeight: '80px', marginTop: '0.5rem' }}
+                value={stepNotes[LAST_STEP_ID] || ''}
+                onChange={(e) => updateStepNote(LAST_STEP_ID, e.target.value)}
+              />
             </div>
 
             {/* Confirmation & Signature Pad */}
             <div style={{ marginTop: '3rem', borderTop: '1px solid var(--line)', paddingTop: '2rem' }}>
               <label className="checkbox-container">
-                <input 
-                  type="checkbox" 
-                  checked={isConfirmed} 
+                <input
+                  type="checkbox"
+                  checked={isConfirmed}
                   onChange={(e) => setIsConfirmed(e.target.checked)}
                 />
                 <span className="checkbox-text">
@@ -1680,10 +1998,12 @@ export default function App() {
               </label>
 
               <div className="signature-panel">
-                <h4 style={{ marginBottom: '1rem', fontFamily: 'var(--font-sans)', fontSize: '1.1rem' }}>חתימת הדייר (חתמו באמצעות העכבר או מגע בנייד):</h4>
-                
+                <h4 style={{ marginBottom: '1rem', fontFamily: 'var(--font-sans)', fontSize: '1.1rem' }}>
+                  {isCoordinator ? 'חתימת מתאמת השינויים בשם הדייר:' : 'חתימת הדייר (חתמו באמצעות העכבר או מגע בנייד):'}
+                </h4>
+
                 <div className="signature-canvas-container">
-                  <canvas 
+                  <canvas
                     ref={canvasRef}
                     className="signature-canvas"
                     width={480}
@@ -1700,7 +2020,7 @@ export default function App() {
                     <div className="signature-canvas-label">כאן חותמים</div>
                   )}
                 </div>
-                
+
                 <div className="signature-actions">
                   <button type="button" className="btn btn-secondary" onClick={clearCanvas}>נקה חתימה</button>
                   <span className="muted-text" style={{ alignSelf: 'center' }}>
@@ -1712,14 +2032,19 @@ export default function App() {
 
             {/* Submit Block */}
             <div style={{ textAlign: 'center', margin: '3rem 0' }}>
+              {isCoordinator && (
+                <button type="button" className="btn btn-secondary" style={{ marginBottom: '1rem' }} onClick={handleCoordinatorSave}>
+                  💾 שמירת התקדמות (ללא חתימה סופית)
+                </button>
+              )}
               {pricing.unpricedItemsSelected ? (
                 <div className="warning-alert-banner" style={{ display: 'inline-flex', maxWidth: '600px', textAlign: 'right' }}>
-                  <span>⚠</span> לא ניתן לשלוח את הטופס לאישור סופי כיוון שישנם פריטים שנבחרו ללא מחיר. אנא פנו לחברת הניהול להשלמת המחיר.
+                  <span>⚠</span> לא ניתן לשלוח את הטופס לאישור סופי כיוון שישנם פריטים שנבחרו ללא מחיר. אנא פנו למתאמת השינויים להשלמת המחיר.
                 </div>
               ) : (
-                <button 
-                  type="button" 
-                  className="btn btn-accent" 
+                <button
+                  type="button"
+                  className="btn btn-accent"
                   style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}
                   disabled={!isConfirmed || !hasSignature}
                   onClick={handleSubmit}
@@ -1730,11 +2055,28 @@ export default function App() {
             </div>
           </div>
         );
-      
+
       default:
         return null;
     }
   };
+
+  // Coordinator mode: show a loading/error state while the villa data is being fetched
+  if (coordinatorVillaParam && coordinatorLoadStatus !== 'ready') {
+    return (
+      <div className="app-container">
+        <main className="main-content" style={{ textAlign: 'center', paddingTop: '4rem' }}>
+          {coordinatorLoadStatus === 'loading' ? (
+            <p>טוען את נתוני וילה {coordinatorVillaParam}...</p>
+          ) : (
+            <div className="warning-alert-banner" style={{ display: 'inline-flex' }}>
+              <span>⚠</span> לא נמצאה וילה {coordinatorVillaParam}, או שאירעה שגיאה בטעינה.
+            </div>
+          )}
+        </main>
+      </div>
+    );
+  }
 
   // Render Submitted successfully page
   if (isSubmitted) {
@@ -1803,7 +2145,7 @@ export default function App() {
         {isLoggedIn && (
           <div className="steps-nav-wrapper">
             <div className="steps-container">
-              {STEPS.map((step) => {
+              {visibleSteps.map((step) => {
                 const isActive = currentStep === step.id;
                 const isCompleted = currentStep > step.id;
                 return (
@@ -1826,9 +2168,30 @@ export default function App() {
         )}
       </header>
 
-      {/* Main Screen Container */}
-      <main className="main-content">
+      {/* Main Screen Container. Item 1: tenants get view-only (no clicks/edits) on every
+          step except the final signature page — enforced here at the container level so every
+          option card, stepper and checkbox inside is covered without touching each one. */}
+      <main className="main-content" style={viewOnly ? { pointerEvents: 'none', opacity: 0.75 } : undefined}>
+        {viewOnly && (
+          <div className="highlight-box copper" style={{ marginBottom: '1.5rem', pointerEvents: 'none' }}>
+            <span>👁</span> מצב צפייה בלבד — הבחירה והחתימה מתבצעות בעמוד האחרון ("{STEPS[STEPS.length - 1].label}").
+          </div>
+        )}
         {renderStepContent()}
+        {/* Item 14: free-text note per step (excluded on welcome/intro/summary, which have their
+            own dedicated note UI) */}
+        {isLoggedIn && currentStep > 1 && currentStep !== LAST_STEP_ID && (
+          <div className="selection-details-panel" style={{ marginTop: '2rem', pointerEvents: 'auto' }}>
+            <div className="swatch-label">הערה לפרק זה ({STEPS.find(s => s.id === currentStep)?.label}):</div>
+            <textarea
+              className="form-control"
+              style={{ width: '100%', minHeight: '70px', marginTop: '0.5rem' }}
+              value={stepNotes[currentStep] || ''}
+              onChange={(e) => updateStepNote(currentStep, e.target.value)}
+              disabled={viewOnly}
+            />
+          </div>
+        )}
       </main>
 
       {/* Sticky Footer controls for navigation (only visible if logged in) */}
@@ -1848,7 +2211,7 @@ export default function App() {
               {currentStep > 1 && (
                 <button type="button" className="btn btn-secondary" onClick={handlePrev}>← הקודם</button>
               )}
-              {currentStep < 12 ? (
+              {currentStep !== LAST_STEP_ID ? (
                 <button type="button" className="btn btn-primary" onClick={handleNext}>הבא ←</button>
               ) : (
                 null

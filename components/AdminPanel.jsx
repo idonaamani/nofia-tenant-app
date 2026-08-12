@@ -23,6 +23,7 @@ export default function AdminPanel() {
 
 function AdminPanelInner() {
   const [status, setStatus] = useState('checking'); // checking | logged_out | logged_in | forbidden
+  const [role, setRole] = useState(null); // 'admin' | 'coordinator' — item 3
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -51,7 +52,7 @@ function AdminPanelInner() {
   const verifyAdminAndLoad = async (userId) => {
     const { data: adminRow } = await supabase
       .from('admins')
-      .select('user_id')
+      .select('user_id, role')
       .eq('user_id', userId)
       .maybeSingle();
     if (!adminRow) {
@@ -59,8 +60,15 @@ function AdminPanelInner() {
       setStatus('forbidden');
       return;
     }
+    setRole(adminRow.role ?? 'coordinator');
     setStatus('logged_in');
     loadVillas();
+  };
+
+  // Item 1 & 3: opens the tenant wizard in full-edit mode for this villa, loaded with its
+  // previously saved selections. Available to both admins and coordinators.
+  const openCoordinatorEditor = (villaNumber) => {
+    window.open(`${window.location.origin}${window.location.pathname}?coordinator=${villaNumber}`, '_blank');
   };
 
   const handleLogin = async (e) => {
@@ -203,16 +211,21 @@ function AdminPanelInner() {
   return (
     <div className="admin-shell">
       <div className="admin-header">
-        <h2>ניהול וילות — נופיה אלפי מנשה</h2>
+        <div>
+          <h2>ניהול וילות — נופיה אלפי מנשה</h2>
+          <span className="muted-text" style={{ fontSize: '0.85rem' }}>מחובר/ת כ{role === 'admin' ? 'מנהל/ת' : 'מתאמת שינויי דיירים'}</span>
+        </div>
         <button type="button" className="btn btn-secondary" onClick={handleSignOut}>יציאה</button>
       </div>
 
       {actionMessage && <div className="highlight-box green" style={{ marginBottom: '1.5rem' }}>{actionMessage}</div>}
       {listError && <div className="warning-alert-banner" style={{ marginBottom: '1.5rem' }}><span>⚠</span> {listError}</div>}
 
-      <button type="button" className="btn btn-accent" style={{ marginBottom: '1.5rem' }} onClick={() => setShowAddForm(!showAddForm)}>
-        {showAddForm ? 'ביטול' : '+ הוספת וילה'}
-      </button>
+      {role === 'admin' && (
+        <button type="button" className="btn btn-accent" style={{ marginBottom: '1.5rem' }} onClick={() => setShowAddForm(!showAddForm)}>
+          {showAddForm ? 'ביטול' : '+ הוספת וילה'}
+        </button>
+      )}
 
       {showAddForm && (
         <form onSubmit={handleAddVilla} className="admin-inline-form">
@@ -268,9 +281,14 @@ function AdminPanelInner() {
                     </>
                   ) : (
                     <>
-                      <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => startEdit(villa)}>עריכה</button>
-                      <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => handleResetPassword(villa.villa_number)}>איפוס סיסמה</button>
-                      <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem', color: 'var(--red-text)' }} onClick={() => handleDelete(villa.id, villa.villa_number)}>מחיקה</button>
+                      <button type="button" className="btn btn-accent" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => openCoordinatorEditor(villa.villa_number)}>✎ עריכת שינויים</button>
+                      <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => startEdit(villa)}>עריכת פרטי קשר</button>
+                      {role === 'admin' && (
+                        <>
+                          <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem' }} onClick={() => handleResetPassword(villa.villa_number)}>איפוס סיסמה</button>
+                          <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.8rem', color: 'var(--red-text)' }} onClick={() => handleDelete(villa.id, villa.villa_number)}>מחיקה</button>
+                        </>
+                      )}
                     </>
                   )}
                 </td>
