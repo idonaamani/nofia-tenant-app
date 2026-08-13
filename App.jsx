@@ -2226,13 +2226,15 @@ export default function App() {
         )}
       </header>
 
-      {/* Main Screen Container. Item 1: tenants get view-only (no clicks/edits) on every
-          step except the final signature page — enforced here at the container level so every
-          option card, stepper and checkbox inside is covered without touching each one. */}
-      <main className="main-content" style={viewOnly ? { pointerEvents: 'none', opacity: 0.75 } : undefined}>
+      {/* Main Screen Container. Item 1: tenants get view-only on every step except the final
+          signature page. Uses a CSS class (not a blanket pointer-events style) so selection
+          controls (option cards, steppers, checkboxes, inputs) get locked while links, info/spec
+          buttons and image zoom stay clickable — a tenant must still be able to open a plan link
+          or read a full spec while in view-only mode. */}
+      <main className={`main-content${viewOnly ? ' view-only-lock' : ''}`}>
         {viewOnly && (
-          <div className="highlight-box copper" style={{ marginBottom: '1.5rem', pointerEvents: 'none' }}>
-            <span>👁</span> מצב צפייה בלבד — הבחירה והחתימה מתבצעות בעמוד האחרון ("{STEPS[STEPS.length - 1].label}").
+          <div className="highlight-box copper" style={{ marginBottom: '1.5rem' }}>
+            <span>👁</span> מצב צפייה בלבד — הבחירה והחתימה מתבצעות בעמוד האחרון ("{STEPS[STEPS.length - 1].label}"). ניתן עדיין לפתוח קישורים ולצפות בפרטים.
           </div>
         )}
         {renderStepContent()}

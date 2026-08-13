@@ -1325,3 +1325,17 @@ p {
   flex: 1 1 160px;
 }
 
+
+/* Item 1: view-only lock for tenants (every step except the final signature page). Only the
+   actual selection/input controls are disabled — links, info/spec-reveal buttons and image
+   zoom stay clickable so a tenant can still open plan links or read full specs while locked. */
+.view-only-lock .option-card,
+.view-only-lock .qty-stepper,
+.view-only-lock .checkbox-container,
+.view-only-lock .color-photo-btn,
+.view-only-lock .swatch-btn,
+.view-only-lock input,
+.view-only-lock textarea {
+  pointer-events: none;
+  opacity: 0.7;
+}
