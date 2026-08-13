@@ -496,7 +496,10 @@ export default function App() {
 
   // Item 1: tenants can only look (not touch) until the final signature page. Coordinators
   // always have full edit access, on every step, for any villa.
-  const viewOnly = isLoggedIn && !isCoordinator && currentStep !== LAST_STEP_ID;
+  // currentStep >= 2 guards the login screen (0) and the intro screen (1, which only has a
+  // "continue" button) from ever being locked, even if isLoggedIn is unexpectedly true there
+  // (e.g. a stale localStorage draft) — otherwise a tenant could get stuck unable to click anything.
+  const viewOnly = isLoggedIn && !isCoordinator && currentStep >= 2 && currentStep !== LAST_STEP_ID;
 
   // Coordinator mode: pull this villa's previously-saved selections (if any) from Supabase and
   // apply them to every piece of state, so the coordinator picks up exactly where the tenant
