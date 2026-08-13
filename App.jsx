@@ -345,7 +345,7 @@ function clearSavedDraft() {
 // step, which item 12 renames. LAST_STEP_ID is used everywhere instead of a hardcoded number.
 const STEPS = [
   { id: 0, label: 'ברוכים הבאים', icon: '👋' },
-  { id: 1, label: 'הסבר שלב ב\'', icon: '📝' },
+  { id: 1, label: 'הסבר כללי', icon: '📝' },
   { id: 2, label: 'אישור תכניות', icon: '📐' },
   { id: 3, label: 'אלומיניום', icon: '🖼️' },
   { id: 4, label: 'מדרגות', icon: '🪜' },
@@ -866,26 +866,29 @@ export default function App() {
         return (
           <div>
             <div className="page-title-section">
-              <h2>הסבר על תהליך שלב ב'</h2>
-              <p className="page-intro-text">בחירת אלמנטים משלימים ומפרטים טכניים לביתכם</p>
+              <h2>הסבר כללי</h2>
+              <p className="page-intro-text">הסבר על תהליך שינויי דיירים</p>
             </div>
-            
-            <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
-              בהמשך לאישור התוכניות ולסיום הבחירות בשלב א', אנו עוברים כעת ל<strong>שלב ב'</strong>: בחירת אלמנטים שונים בבית שלכם, קבלת אומדן עלויות משודרג בזמן אמת, וחתימה דיגיטלית בסיום התהליך.
-            </p>
+
+            <div className="highlight-box copper" style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
+              <span>ℹ</span> מילוי הבחירות במערכת מתבצע יחד עם <strong>מתאמת שינויי הדיירים, נעה רומפלר</strong> בלבד. הדיירים צופים בבחירות ומאשרים אותן, אך אינם ממלאים אותן לבד — יש לתאם פגישה עם נעה לביצוע הבחירות במשותף.
+            </div>
 
             <h3 style={{ marginBottom: '1rem' }}>הנושאים לבחירה בתהליך:</h3>
             <div className="intro-grid">
+              <div className="intro-mini-card"><span>📐</span> אישור תכניות</div>
               <div className="intro-mini-card"><span>🖼️</span> אלומיניום</div>
               <div className="intro-mini-card"><span>🪜</span> מדרגות</div>
               <div className="intro-mini-card"><span>⛓️</span> מעקות</div>
-              <div className="intro-mini-card"><span>🎨</span> גוון טיח חוץ</div>
-              <div className="intro-mini-card"><span>⛱️</span> פרגולות</div>
+              <div className="intro-mini-card"><span>🍳</span> מטבח</div>
+              <div className="intro-mini-card"><span>🎨</span> תוספת טיח</div>
+              <div className="intro-mini-card"><span>⛱️</span> פרגולה</div>
               <div className="intro-mini-card"><span>🚪</span> דלתות חוץ</div>
               <div className="intro-mini-card"><span>🚪</span> דלתות פנים</div>
               <div className="intro-mini-card"><span>🛣️</span> שביל כניסה</div>
-              <div className="intro-mini-card"><span>🚧</span> שערים וגדרות</div>
-              <div className="intro-mini-card"><span>🔌</span> חשמל ומים</div>
+              <div className="intro-mini-card"><span>🔥</span> חימום תת רצפתי</div>
+              <div className="intro-mini-card"><span>❄️</span> מיזוג אוויר</div>
+              <div className="intro-mini-card"><span>🔌</span> שינויי חשמל אינסטלציה ובינוי</div>
             </div>
 
             <div className="highlight-boxes-grid">
