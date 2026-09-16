@@ -13,6 +13,35 @@ const ERROR_MESSAGES = {
 // Real (villa number + password) tenant login, backed by Supabase Auth via a synthetic
 // per-villa email. Falls back to nothing here — App.jsx only renders this component
 // once isSupabaseConfigured is true; otherwise it keeps the old plain villa+name form.
+// Item 1: a plain show/hide eye toggle for password fields — nothing fancier.
+function PasswordField({ id, label, value, onChange, required }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="form-group">
+      <label htmlFor={id}>{label}</label>
+      <div className="password-field-wrap">
+        <input
+          type={visible ? 'text' : 'password'}
+          id={id}
+          className="form-control"
+          value={value}
+          onChange={onChange}
+          required={required}
+        />
+        <button
+          type="button"
+          className="password-toggle-btn"
+          onClick={() => setVisible(v => !v)}
+          aria-label={visible ? 'הסתר סיסמה' : 'הצג סיסמה'}
+          tabIndex={-1}
+        >
+          {visible ? '🙈' : '👁'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function TenantAuthGate({ onSuccess }) {
   const [mode, setMode] = useState('password'); // 'password' | 'verify_id' | 'set_password'
   const [villaNumber, setVillaNumber] = useState('');
@@ -137,13 +166,7 @@ export default function TenantAuthGate({ onSuccess }) {
               value={villaNumber} onChange={(e) => setVillaNumber(e.target.value)} required
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">סיסמה</label>
-            <input
-              type="password" id="password" className="form-control"
-              value={password} onChange={(e) => setPassword(e.target.value)} required
-            />
-          </div>
+          <PasswordField id="password" label="סיסמה" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={isBusy}>
             {isBusy ? 'מתחבר...' : 'כניסה למערכת'}
           </button>
@@ -195,20 +218,8 @@ export default function TenantAuthGate({ onSuccess }) {
           <p style={{ marginBottom: '1rem', fontSize: '0.95rem' }}>
             הזהות אומתה בהצלחה. נא לבחור סיסמה אישית לכניסות הבאות למערכת.
           </p>
-          <div className="form-group">
-            <label htmlFor="newPassword">סיסמה חדשה</label>
-            <input
-              type="password" id="newPassword" className="form-control"
-              value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="confirmPassword">אימות סיסמה</label>
-            <input
-              type="password" id="confirmPassword" className="form-control"
-              value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required
-            />
-          </div>
+          <PasswordField id="newPassword" label="סיסמה חדשה" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+          <PasswordField id="confirmPassword" label="אימות סיסמה" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
           <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={isBusy}>
             {isBusy ? 'שומר...' : 'שמירה וכניסה'}
           </button>

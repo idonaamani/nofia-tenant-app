@@ -616,6 +616,33 @@ p {
   box-shadow: 0 0 0 3px rgba(107, 122, 94, 0.15);
 }
 
+/* Item 1: password show/hide eye toggle */
+.password-field-wrap {
+  position: relative;
+}
+
+.password-field-wrap .form-control {
+  padding-left: 2.75rem;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.35rem;
+  color: var(--muted);
+}
+
+.password-toggle-btn:hover {
+  color: var(--ink);
+}
+
 /* SVG Horizon Signature at bottom of Welcome only */
 .horizon-svg-container {
   position: absolute;
@@ -797,6 +824,7 @@ p {
 
 .swatch-items {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -1338,4 +1366,16 @@ p {
 .view-only-lock textarea {
   pointer-events: none;
   opacity: 0.7;
+}
+
+/* pointer-events:none on .option-card above also blocks its children by default — explicitly
+   restore it for the elements the comment above promises stay clickable: plan-open links, spec
+   drill-down buttons/links, and zoomable images (item 10 needs this for "אישור תכניות" links). */
+.view-only-lock .option-card a,
+.view-only-lock .option-card button.btn-secondary,
+.view-only-lock .option-card button.btn-primary,
+.view-only-lock .option-card .zoomable-img,
+.view-only-lock .option-card [style*="text-decoration: underline"] {
+  pointer-events: auto;
+  opacity: 1;
 }

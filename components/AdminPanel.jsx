@@ -1,6 +1,35 @@
 import { useEffect, useState, Fragment } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 
+// Item 1: a plain show/hide eye toggle for password fields — nothing fancier.
+function PasswordField({ id, label, value, onChange, required }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="form-group">
+      <label htmlFor={id}>{label}</label>
+      <div className="password-field-wrap">
+        <input
+          type={visible ? 'text' : 'password'}
+          id={id}
+          className="form-control"
+          value={value}
+          onChange={onChange}
+          required={required}
+        />
+        <button
+          type="button"
+          className="password-toggle-btn"
+          onClick={() => setVisible(v => !v)}
+          aria-label={visible ? 'הסתר סיסמה' : 'הצג סיסמה'}
+          tabIndex={-1}
+        >
+          {visible ? '🙈' : '👁'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const emptyForm = { villaNumber: '', tenantName: '', idNumbers: '', phone: '', email: '' };
 const emptyPlanLinks = { architecture: '', electricity: '', plumbing: '', hvac: '' };
 const PLAN_LINK_FIELDS = [
@@ -223,10 +252,7 @@ function AdminPanelInner() {
               <label htmlFor="adminEmail">מייל</label>
               <input type="email" id="adminEmail" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
-            <div className="form-group">
-              <label htmlFor="adminPassword">סיסמה</label>
-              <input type="password" id="adminPassword" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </div>
+            <PasswordField id="adminPassword" label="סיסמה" value={password} onChange={(e) => setPassword(e.target.value)} required />
             <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>כניסה</button>
           </form>
         </div>

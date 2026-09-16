@@ -12,12 +12,6 @@ import railingBarcodeImg from './assets/railing_barcode.jpg';
 import railingExpandedImg from './assets/railing_expanded.jpg';
 import railingDrawingImg from './assets/railing_drawing.jpg';
 
-import aluminumColorGreenGray from './assets/aluminum_color_greengray.jpg';
-import aluminumColorOnyx from './assets/aluminum_color_onyx.jpg';
-import aluminumColorGray from './assets/aluminum_color_gray.jpg';
-import aluminumColorMeteorite from './assets/aluminum_color_meteorite.jpg';
-
-
 import pergolaAluminumImg from './assets/pergola_aluminum.jpg';
 import pergolaAlusteelImg from './assets/pergola_alusteel.jpg';
 import pergolaDrawingImg from './assets/pergola_drawing.jpg';
@@ -36,112 +30,17 @@ import pathPaversImg from './assets/path_pavers.jpg';
 import pathTravertineImg from './assets/path_travertine.jpg';
 
 
-// Structured data constants for models, specifications, and prices.
-// Prices and water/wind-tightness ratings (מדרג איטום רוח/מים) verified against the
-// official "חוברת תוספות ומחירים" pricing sheet (July 2026 correction).
-const ALUMINUM_MODELS = {
-  sliding: [
-    {
-      id: 'model_7500',
-      name: 'פרופיל 7500 (ויטרינה)',
-      price: 1200,
-      unit: 'מ"ר',
-      rating: null,
-      desc: 'נעילה רב נקודתית, ידית בלגי/אופיס, זיגוג 4–22 מ"מ.',
-      fullSpec: '• פרזול: אפשרות נעילה רב נקודתית ונעילה בנקודה אחת. מבחר ידיות בסגנון בלגי, אופיס וקולקציית מעצבים.\n• זיגוג: זיגוג זכוכית עם סרגלי זיגוג ללא פרוק מסגרת הכנף.\n   - כנף הזזה: 4 עד 22 מ"מ זכוכית רגילה או בידודית.\n   - כנף מג\'יקליל: 4 עד 14 מ"מ זכוכית רגילה או בידודית.\n   - מסגרת קבועה: 4 עד 34 מ"מ זכוכית רגילה או בידודית.\n• רשת: שילוב כנף רשת הזזה השייכת לסדרה.\n• תריס: שילוב עם תריס רפפה / מערכת מונובלוק 10/30/40 / ארגז תריס סמוי "פירנצה".'
-    },
-    {
-      id: 'model_7600',
-      name: 'פרופיל 7600 (ויטרינה)',
-      price: 2000,
-      unit: 'מ"ר',
-      rating: 'D',
-      desc: 'אביזרים מקוריים, נעילה רב נקודתית, ידית באוהאוס, זיגוג 6–12 מ"מ.',
-      fullSpec: '• פרזול, אביזרים וידיות: אביזרים מקוריים לסדרה. מנגנון נעילה רב נקודתי. מבחר ידיות בסגנון באוהאוס.\n• זיגוג, סוג זכוכית ועובי: 6 עד 12 מ"מ זכוכית רגילה (מונוליט) או זכוכית טריפלקס (רבודה) או רב שכבתית; 14 עד 28 מ"מ זכוכית בידודית.\n• רשת: רשת הזזה עם כנף זהה לכנף זיגוג, או רשת חדשנית עם מימד עומק קטן.\n• תריס: שילוב עם מערכת מונובלוק 30/40, או ארגז תריס סמוי "פירנצה" או רולבוקס.'
-    },
-    {
-      id: 'model_2200',
-      name: 'פרופיל 2200 (ויטרינה)',
-      price: 2200,
-      unit: 'מ"ר',
-      rating: 'G',
-      desc: 'ידיות בלגי/אופיס, גלגלים למשקל כבד, סרגל זיגוג.',
-      fullSpec: '• פרזול: מבחר ידיות בסגנון בלגי אופיס וקולקציית מעצבים. גלגלים מיוחדים לנשיאת משקל כנף כבדה במיוחד. אביזרים יוקרתיים מהטובים בעולם. מנגנון נעילה נקודתי לכנף.\n• זיגוג: 6 עד 13 מ"מ זכוכית רגילה או שכבתית; 14 עד 47 מ"מ זכוכית בידודית; 37 עד 47 מ"מ זכוכית בידודית עם צלון פנימי. זיגוג זכוכית ע"י סרגל זיגוג המאפשר החלפת זכוכית ללא פירוק מסגרת הכנף.\n• רשת: ניתן לשלב רשת מקורית.\n• תריס: שילוב עם מערכת מונובלוק 10.'
-    },
-    {
-      id: 'model_9400',
-      name: 'פרופיל 9400 (ויטרינה)',
-      price: 1800,
-      unit: 'מ"ר',
-      rating: 'H',
-      desc: 'מנעול רב נקודתי, גודל כנף מקסימלי, רשת פליסה.',
-      fullSpec: '• פרזול: אביזרים מקוריים לסדרה, מנגנון נעילה רב נקודתי.\n• גודל כנף מקסימלי: רוחב 180 ס"מ | גובה 280 ס"מ, או רוחב 160 ס"מ | גובה 300 ס"מ.\n• זיגוג: 6 עד 12 מ"מ זכוכית רגילה או רב שכבתית; 14 עד 24 מ"מ בידודית; 37 עד 45 מ"מ בידודית עם צלון מובנה.\n• רשת: רשת הזזה מקורית לסדרה. רשת פליסה - רשת מתקפלת הסמויה מהעין כאשר הכנף אסופה.\n• תריס: שילוב עם מערכת מונובלוק 30/40, או ארגז תריס סמוי "פירנצה" ו"רול בוקס".'
-    }
-  ],
-  window: [
-    {
-      id: 'model_7000',
-      name: 'פרופיל 7000 (חלון קבוע/הזזה)',
-      price: 1300,
-      unit: 'מ"ר',
-      rating: 'G',
-      desc: 'אביזרים מקוריים, זיגוג 3–11 מ"מ, מג\'קליל.',
-      fullSpec: '• פרזול: אביזרים מקוריים לסדרה.\n• זיגוג: 3 עד 11 מ"מ זכוכית חד / רב שכבתית; 14 עד 18 מ"מ זכוכית בידודית.\n• מג\'יקליל: 4 עד 10 מ"מ זכוכית חד / רב שכבתית, או 14 מ"מ זכוכית בידודית.\n• רשת: רשת מקורית לסדרה או רשת בינונית.\n• תריס: שילוב עם תריס רפפה / מערכת מונובלוק 10/30/40 / ארגז תריס סמוי "פירנצה".'
-    },
-    {
-      id: 'model_7500_window',
-      name: 'פרופיל 7500 (חלון קבוע/הזזה)',
-      price: 1300,
-      unit: 'מ"ר',
-      rating: 'E',
-      desc: 'נעילה רב נקודתית, ידית בלגי/אופיס, זיגוג 4–22 מ"מ.',
-      fullSpec: '• פרזול: אפשרות נעילה רב נקודתית ונעילה בנקודה אחת. מבחר ידיות בסגנון בלגי, אופיס וקולקציית מעצבים.\n• זיגוג: 4 עד 22 מ"מ זכוכית רגילה או בידודית (כנף הזזה); 4 עד 34 מ"מ במסגרת קבועה.\n• רשת: שילוב כנף רשת הזזה השייכת לסדרה.\n• תריס: שילוב עם תריס רפפה / מערכת מונובלוק 10/30/40 / ארגז תריס סמוי "פירנצה".'
-    },
-    {
-      id: 'model_1600',
-      name: 'פרופיל 1600 (חלון קבוע/הזזה)',
-      price: 4800,
-      unit: 'מ"ר',
-      rating: 'C',
-      desc: 'נעילה רב נקודתית, ידית מינימליסטית, רשת צרה.',
-      fullSpec: '• פרזול: אביזרים מקוריים לסדרה. מנגנון נעילה רב נקודתי. ידית מעוצבת מינימליסטית.\n• זיגוג: 6 עד 18 מ"מ זכוכית מונוליטית / רב שכבתית או בידודית.\n• רשת: הזזה ייחודית לסדרה עם פרופילים צרים במיוחד.\n• תריס: שילוב מערכת ארגז סמוי.'
-    }
-  ],
-  door: [
-    {
-      id: 'model_5500',
-      name: 'פרופיל 5500 (דלת כנף)',
-      price: 4200,
-      unit: 'קומפלט',
-      rating: 'H',
-      desc: 'ידיות בלגי BASIC, צלון פנימי, שילוב תריס גלילה.',
-      fullSpec: '• פרזול: אביזרים מקוריים לסדרה. מבחר ידיות בסגנון בלגי BASIC וקולקציית מעצבים.\n• זיגוג: זיגוג רגיל או רב שכבתי בעובי 4 עד 13 מ"מ; זיגוג בידודי בעובי 14 עד 32 מ"מ ו-37 עד 40 מ"מ; זיגוג בידודי עם צלון פנימי חשמלי או ידני.\n• רשת: שילוב עם רשת קבועה / נשלפת.\n• תריס: שילוב עם תריס גלילה / כפפה, מערכת מונובלוק 30/40, תריס 1300, או ארגז תריס סמוי "פירנצה".'
-    },
-    {
-      id: 'model_4350',
-      name: 'פרופיל 4350 (דלת כנף)',
-      price: 4000,
-      unit: 'קומפלט',
-      rating: 'C',
-      desc: 'דלת ציר במפרט בסיסי איכותי.',
-      fullSpec: '• דלת כנף/ציר מאלומיניום מחוזק, במפרט בסיסי איכותי.\n• מתאימה ליציאה למרפסות שירות או חצרות אחוריות.\n• אביזרי נעילה סטנדרטיים ואיטום גומי כפול.'
-    },
-    {
-      id: 'model_5600',
-      name: 'פרופיל 5600 (דלת כנף)',
-      price: 6000,
-      unit: 'קומפלט',
-      rating: '+H',
-      desc: 'ידית מינימליסטית, רשת פליסה, תריס נפתח החוצה.',
-      fullSpec: '• פרזול: אביזרים מקוריים לסדרה. מנגנון נעילה רב נקודתי. ידית מעוצבת מינימליסטית.\n• זיגוג: מ-4 עד 24 מ"מ זכוכית רגילה או בידודית.\n• רשת: שילוב עם רשת קבועה קלה לשליפה, רשת פליסה מתקפלת, או דלת רשת על ציר - קליל בלגי רשת 1300.\n• תריס: שילוב עם מערכת מונובלוק 30/40, או תריס בלגי קליל 1300 (תריס רפפה נפתח על ציר החוצה), או ארגז תריס סמוי "פירנצה" ו"רול בוקס".'
-    }
-  ]
-};
+// Item 8: aluminum is no longer an in-app interactive model/qty/color picker — each villa's
+// aluminum scope is already fixed in its subcontractor (Bassel) quote, reviewed as a PDF under
+// the "אישור תכניות" step (see PLAN_DISCIPLINES further down) instead of priced here.
 
+// Item 12: בוצ'ר אלון עובי 3 ס"מ — flat add-on, no official photo yet from מורן (add once supplied).
 const STAIRS_OPTIONS = [
   { id: 1, name: 'מדרגות סטנדרטיות (בטון, תחתית חלקה)', price: 0, desc: 'מדרגות בטון יצוקות בעלות תחתית ישרה חלקה. כלול במפרט ללא תוספת עלות.', image: stairsStandardImg },
   { id: 2, name: 'מדרגות משוננות (בטון, תחתית משוננת)', price: 15000, desc: 'מדרגות בטון מעוצבות שבהן גם החלק התחתון בנוי בצורה משוננת המלווה את שלבי המדרגות. מראה עיצובי מודרני.', image: stairsSawtoothImg },
-  { id: 3, name: 'מדרגות קלות (קונסטרוקציה + עץ גושני)', price: 45000, desc: 'מדרגות קלות ומרחפות המבוססות על קונסטרוקציית פלדה כבדה ומדרכי עץ גושני יוקרתי, למראה אוורירי ופתוח.', image: stairsLightweightImg }
+  { id: 3, name: 'מדרגות קלות (קונסטרוקציה + עץ גושני)', price: 45000, desc: 'מדרגות קלות ומרחפות המבוססות על קונסטרוקציית פלדה כבדה ומדרכי עץ גושני יוקרתי, למראה אוורירי ופתוח.', image: stairsLightweightImg },
+  { id: 4, name: 'מדרגות בוצ\'ר אלון עובי 3 ס"מ', price: 30000, desc: 'מדרגות עץ אלון מלא בעיבוד בוצ\'ר בעובי 3 ס"מ. תמונת דגם רשמית תתקבל ממורן ותתווסף בהמשך.', image: null },
+  { id: 'custom', name: 'אפשרות שאינה כלולה ברשימה', price: null, desc: 'ברצוני לבחור דגם מדרגות אחר, שאינו מופיע כאן. יש לתאם את הפרטים המדויקים מול מתאמת השינויים.', image: null }
 ];
 
 // Item 4: villas 1, 2, 4, 9, 20, 21 are single-story (קומה אחת) — the entire stairs step is
@@ -156,7 +55,8 @@ const STAIRS_FLIGHT_QTY_VILLAS = null; // TODO: e.g. [6, 11, 22] once confirmed 
 const RAILINGS_OPTIONS = [
   { id: 1, name: 'מעקה אנכי (סטנדרטי)', price: 0, unit: 'מ"א', desc: 'מעקה ברזל בעל שלבים אנכיים פשוטים ונקיים. מותקן בגוון שחור. כלול בסטנדרט.', image: railingVerticalImg },
   { id: 2, name: 'מעקה ברקוד (משודרג)', price: 320, unit: 'מ"א', desc: 'מעקה ברזל מעוצב במרווחים משתנים דמויי קוד ברקוד מודרני. מראה ייחודי ומתוחכם.', image: railingBarcodeImg },
-  { id: 3, name: 'מעקה אקספנדד (פרימיום)', price: 650, unit: 'מ"א', desc: 'מעקה פח רשת מתוח (Expanded Metal) יוקרתי. בידוד ויזואלי קל ומראה תעשייתי יוקרתי.', image: railingExpandedImg }
+  { id: 3, name: 'מעקה אקספנדד (פרימיום)', price: 650, unit: 'מ"א', desc: 'מעקה פח רשת מתוח (Expanded Metal) יוקרתי. בידוד ויזואלי קל ומראה תעשייתי יוקרתי.', image: railingExpandedImg },
+  { id: 'custom', name: 'אפשרות שאינה כלולה ברשימה', price: null, unit: null, desc: 'ברצוני לבחור דגם מעקה אחר, שאינו מופיע כאן. יש לתאם את הפרטים המדויקים מול מתאמת השינויים.', image: null }
 ];
 
 // Real RAL-coded color options for railings (item 5). No brochure photos exist for these
@@ -281,27 +181,12 @@ const AIRCON_PRICING = {
 
 // Premium options (3 & 4) priced per sqm from "חוברת תוספות ומחירים.xlsx" (שבילי פיתוח
 // וריצוף חוץ) — the two standard options stay included/₪0 regardless of area.
+// Item 17: descriptions simplified to just "ריצוף" + the stone/finish type, no other prose.
 const PATH_OPTIONS = [
-  { id: 1, name: 'יציקת שביל כניסה – בטון מסורק (סטנדרט)', price: 0, desc: 'יציקת בטון בגימור מסורק למניעת החלקה. כלול במפרט ללא עלות נוספת.', image: pathConcreteNewImg },
-  { id: 2, name: 'ריצוף משתלבות – אבן הרובע אומבריאנו (סטנדרט)', price: 0, desc: 'ריצוף אבנים משתלבות מבית אומבריאנו. בחירה וגוון סופי ייקבעו בהמשך מול ספק הכלים הסניטריים.', image: pathPaversImg },
-  { id: 3, name: 'ריצוף השביל בתיאום משטחים תחת פרגולה (משודרג)', price: 350, unit: 'מ"ר', desc: 'ריצוף שביל כניסה בהמשכיות ושלמות עיצובית עם משטח הפרגולה.', image: pathTravertineImg },
-  { id: 4, name: 'יציקת שביל כניסה – בטון מוחלק (פרימיום)', price: 350, unit: 'מ"ר', desc: 'יציקת בטון פרימיום בגימור מוחלק ומלוטש למראה מודרני מבריק.', image: pathConcreteFinishedImg }
-];
-
-// Real profile colour swatches (from the brochure's colour chart, page 5).
-// Note: color codes are transcribed from the printed brochure table — please double-check
-// against the physical/PDF brochure before finalizing, the table layout was hard to parse.
-const ALUMINUM_COLORS = [
-  { name: 'ירוק אפור 281', code: 'I28', image: aluminumColorGreenGray },
-  { name: 'שחור אוניקס', code: 'IRON I66', image: aluminumColorOnyx },
-  { name: 'אפור', code: 'FINE IRON 602', image: aluminumColorGray },
-  { name: 'Meteorite', code: 'Meteorite Haze 31F', image: aluminumColorMeteorite }
-];
-
-// Blinds/louvers (רפפות/צלונים) only offer 2 of the 4 profile colours per the brochure
-const BLINDS_COLORS = [
-  { name: 'אפור', code: 'Anodized Alloy 49F', image: aluminumColorGray },
-  { name: 'Meteorite', code: 'Meteorite Haze 31F', image: aluminumColorMeteorite }
+  { id: 1, name: 'יציקת שביל כניסה – בטון מסורק (סטנדרט)', price: 0, desc: 'יציקה, בטון מסורק.', image: pathConcreteNewImg },
+  { id: 2, name: 'ריצוף משתלבות – אבן הרובע אומבריאנו (סטנדרט)', price: 0, desc: 'ריצוף, אבן הרובע אומבריאנו.', image: pathPaversImg },
+  { id: 3, name: 'ריצוף השביל בתיאום משטחים תחת פרגולה (משודרג)', price: 350, unit: 'מ"ר', desc: 'ריצוף, בהתאמה למשטח הפרגולה.', image: pathTravertineImg },
+  { id: 4, name: 'יציקת שביל כניסה – בטון מוחלק (פרימיום)', price: 350, unit: 'מ"ר', desc: 'יציקה, בטון מוחלק.', image: pathConcreteFinishedImg }
 ];
 
 // Item 7 (updated live by Ido): the exterior-plaster color picker is removed entirely — there
@@ -340,6 +225,21 @@ function clearSavedDraft() {
   }
 }
 
+// Items 6, 8, 9, 10, 11, 14, 15: "אישור תכניות" now covers every discipline that has a plan to
+// review — including aluminum (item 8, replacing the old interactive step entirely) and kitchen
+// (item 14, folded in from its own former step). Each one gets a real per-villa PDF (served from
+// /plans/villa-<N>/<key>.pdf) except kitchen and exterior development, which have no hosted file
+// yet and fall back to the admin-managed plan_links URL or a coordinate-with-Noa note.
+const PLAN_DISCIPLINES = [
+  { key: 'architecture', label: 'אדריכלות', icon: '🏛️', hasFile: true },
+  { key: 'electricity', label: 'חשמל', icon: '🔌', hasFile: true },
+  { key: 'plumbing', label: 'אינסטלציה', icon: '🚰', hasFile: true },
+  { key: 'hvac', label: 'מיזוג אוויר (תכנית)', icon: '❄️', hasFile: true },
+  { key: 'aluminum', label: 'אלומיניום', icon: '🖼️', hasFile: true },
+  { key: 'exteriorDevelopment', label: 'פיתוח חוץ', icon: '🌳', hasFile: false },
+  { key: 'kitchen', label: 'מטבח', icon: '🍳', hasFile: false }
+];
+
 // Item 15: שערים וגדרות removed entirely. Item 7: טיח חוץ repurposed into a small thermal-render
 // add-on step. Items 10 & 11: two new steps (חימום תת רצפתי, מיזוג אוויר) before the electric
 // step, which item 12 renames. LAST_STEP_ID is used everywhere instead of a hardcoded number.
@@ -347,19 +247,18 @@ const STEPS = [
   { id: 0, label: 'ברוכים הבאים', icon: '👋' },
   { id: 1, label: 'הסבר כללי', icon: '📝' },
   { id: 2, label: 'אישור תכניות', icon: '📐' },
-  { id: 3, label: 'אלומיניום', icon: '🖼️' },
+  { id: 3, label: 'תכניות סופיות לאחר שינויים', icon: '✅' },
   { id: 4, label: 'מדרגות', icon: '🪜' },
   { id: 5, label: 'מעקות', icon: '⛓️' },
-  { id: 6, label: 'מטבח', icon: '🍳' },
-  { id: 7, label: 'תוספת טיח', icon: '🎨' },
-  { id: 8, label: 'פרגולה', icon: '⛱️' },
-  { id: 9, label: 'דלתות חוץ', icon: '🚪' },
-  { id: 10, label: 'דלתות פנים', icon: '🚪' },
-  { id: 11, label: 'שביל כניסה', icon: '🛣️' },
-  { id: 12, label: 'חימום תת רצפתי', icon: '🔥' },
-  { id: 13, label: 'מיזוג אוויר', icon: '❄️' },
-  { id: 14, label: 'שינויי חשמל אינסטלציה ובינוי', icon: '🔌' },
-  { id: 15, label: 'סיכום וחתימה', icon: '✍️' }
+  { id: 6, label: 'תוספת טיח', icon: '🎨' },
+  { id: 7, label: 'פרגולה', icon: '⛱️' },
+  { id: 8, label: 'דלתות חוץ', icon: '🚪' },
+  { id: 9, label: 'דלתות פנים', icon: '🚪' },
+  { id: 10, label: 'שביל כניסה', icon: '🛣️' },
+  { id: 11, label: 'חימום תת רצפתי', icon: '🔥' },
+  { id: 12, label: 'מיזוג אוויר', icon: '❄️' },
+  { id: 13, label: 'שינויי חשמל אינסטלציה ובינוי', icon: '🔌' },
+  { id: 14, label: 'סיכום וחתימה', icon: '✍️' }
 ];
 const LAST_STEP_ID = STEPS[STEPS.length - 1].id;
 
@@ -380,17 +279,13 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(coordinatorVillaParam) || (saved.isLoggedIn ?? false));
   const [currentStep, setCurrentStep] = useState(() => coordinatorVillaParam ? 1 : (saved.currentStep ?? 0));
 
-  // Form selections state
-  const [aluminum, setAluminum] = useState(() => saved.aluminum ?? {
-    selectedSliding: 'model_7500',
-    slidingQty: 10,
-    selectedWindow: 'model_7000',
-    windowQty: 5,
-    selectedDoor: 'model_5500',
-    doorQty: 1,
-    profileColor: 'ירוק אפור 281',
-    blindsColor: 'אפור'
-  });
+  // Form selections state.
+  // Item 8: aluminum has no in-app selection state anymore — it's a fixed, already-priced
+  // subcontractor quote reviewed as a PDF under "אישור תכניות" (see planStatus.aluminum below).
+
+  // Item 13: stairs/railings custom-option text, shown when the tenant picks "custom".
+  const [stairsCustomNote, setStairsCustomNote] = useState(() => saved.stairsCustomNote ?? '');
+  const [railingsCustomNote, setRailingsCustomNote] = useState(() => saved.railingsCustomNote ?? '');
 
   const [stairs, setStairs] = useState(() => saved.stairs ?? 1); // STAIRS_OPTIONS ID
   const [stairsFlightQty, setStairsFlightQty] = useState(() => saved.stairsFlightQty ?? 1); // גרמים לפי מפלסים
@@ -401,7 +296,17 @@ export default function App() {
 
   // Item 6: kitchen — plan approval, color, and cost (no standard price list was supplied,
   // so cost is entered/edited by the coordinator once quoted with the kitchen supplier).
+  // Relocated (item 14) into the "אישור תכניות" step; the cost field itself is unchanged.
   const [kitchen, setKitchen] = useState(() => saved.kitchen ?? { planApproved: false, color: '', cost: 0 });
+
+  // Items 6, 9, 15: per-discipline plan status — "no more changes" flag + free-text notes
+  // (item 15), keyed by PLAN_DISCIPLINES[].key. A discipline flagged noMoreChanges appears
+  // automatically under "תכניות סופיות לאחר שינויים" (item 11) — a live filtered view, so it can
+  // never fall out of sync with the source plan the way a one-off copy could.
+  const [planStatus, setPlanStatus] = useState(() => saved.planStatus ?? {});
+  const updatePlanStatus = (key, patch) => {
+    setPlanStatus(prev => ({ ...prev, [key]: { noMoreChanges: false, notes: '', ...prev[key], ...patch } }));
+  };
 
   // Item 7: plaster color picker removed; only the optional Peles thermal render add-on remains.
   const [plasterThermalRender, setPlasterThermalRender] = useState(() => saved.plasterThermalRender ?? false);
@@ -428,6 +333,14 @@ export default function App() {
   // Item 11: aircon opt-out. When true the tenant declines the contractor's Tadiran package.
   const [airconOptOut, setAirconOptOut] = useState(() => saved.airconOptOut ?? false);
 
+  // Item 19: full annex text shown + acknowledged in-app when opting out of the contractor's
+  // aircon package. Executed together with the main digital signature at the final step —
+  // there is no separate signature pad, but the acknowledgment + typed buyer names are required
+  // before final submit, exactly like the annex's own "שם רוכש, חתימה, תאריך" lines.
+  const [airconAnnexAcknowledged, setAirconAnnexAcknowledged] = useState(() => saved.airconAnnexAcknowledged ?? false);
+  const [airconAnnexBuyer1Name, setAirconAnnexBuyer1Name] = useState(() => saved.airconAnnexBuyer1Name ?? '');
+  const [airconAnnexBuyer2Name, setAirconAnnexBuyer2Name] = useState(() => saved.airconAnnexBuyer2Name ?? '');
+
   // Item 14: free-text notes per step, shown grouped by section on the summary page after signing.
   const [stepNotes, setStepNotes] = useState(() => saved.stepNotes ?? {});
 
@@ -449,6 +362,23 @@ export default function App() {
     };
   });
 
+  // Item 5: ad-hoc line items outside the standard categories — addable only from the
+  // coordinator's own login (?coordinator=<villa>), never by the tenant. A plain tenant sees the
+  // list read-only (if the coordinator already added anything) but has no way to add to it.
+  const [extraItems, setExtraItems] = useState(() => saved.extraItems ?? []);
+  const addExtraItem = () => {
+    if (!isCoordinator) return;
+    setExtraItems(items => [...items, { id: `extra_${Date.now()}`, description: '', cost: 0 }]);
+  };
+  const updateExtraItem = (id, patch) => {
+    if (!isCoordinator) return;
+    setExtraItems(items => items.map(it => it.id === id ? { ...it, ...patch } : it));
+  };
+  const removeExtraItem = (id) => {
+    if (!isCoordinator) return;
+    setExtraItems(items => items.filter(it => it.id !== id));
+  };
+
   // Verification & Sign States
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
@@ -466,6 +396,60 @@ export default function App() {
     setLightboxImage({ src, alt });
   };
 
+  // Items 3+4: make the mobile/browser back gesture close an open lightbox or spec modal
+  // first, then step back one wizard step, instead of exiting the app. We push one history
+  // entry per step, and one more whenever a modal/lightbox opens; explicit close buttons call
+  // history.back() instead of clearing state directly, so state and the browser stack never
+  // drift out of sync — a single popstate handler is the only place that ever closes them.
+  const isPopStateNav = useRef(false);
+  const modalOpenRef = useRef(false);
+  const lightboxOpenRef = useRef(false);
+
+  useEffect(() => {
+    window.history.replaceState({ nofiaStep: currentStep }, '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (isPopStateNav.current) { isPopStateNav.current = false; return; }
+    window.history.pushState({ nofiaStep: currentStep }, '');
+  }, [currentStep]);
+
+  useEffect(() => {
+    const isOpen = !!activeModal;
+    if (isOpen && !modalOpenRef.current) {
+      window.history.pushState({ nofiaStep: currentStep, nofiaModal: true }, '');
+    }
+    modalOpenRef.current = isOpen;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeModal]);
+
+  useEffect(() => {
+    const isOpen = !!lightboxImage;
+    if (isOpen && !lightboxOpenRef.current) {
+      window.history.pushState({ nofiaStep: currentStep, nofiaLightbox: true }, '');
+    }
+    lightboxOpenRef.current = isOpen;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightboxImage]);
+
+  useEffect(() => {
+    const handlePopState = (e) => {
+      if (lightboxOpenRef.current) { setLightboxImage(null); return; }
+      if (modalOpenRef.current) { setActiveModal(null); return; }
+      const targetStep = e.state?.nofiaStep;
+      if (targetStep !== undefined) {
+        isPopStateNav.current = true;
+        setCurrentStep(targetStep);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const closeModal = () => window.history.back();
+  const closeLightbox = () => window.history.back();
+
   // Canvas Drawing Pad References
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -475,8 +459,12 @@ export default function App() {
     if (isSubmitted) return;
     const draft = {
       villaNumber, tenantName, isLoggedIn, currentStep,
-      aluminum, stairs, stairsFlightQty, railings, railingsQty, railingsColor, kitchen, plasterThermalRender,
-      pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating, airconOptOut, stepNotes, electricity
+      planStatus, extraItems,
+      stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
+      kitchen, plasterThermalRender,
+      pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
+      airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
+      stepNotes, electricity
     };
     try {
       window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
@@ -485,8 +473,12 @@ export default function App() {
     }
   }, [
     isSubmitted, villaNumber, tenantName, isLoggedIn, currentStep,
-    aluminum, stairs, stairsFlightQty, railings, railingsQty, railingsColor, kitchen, plasterThermalRender,
-    pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating, airconOptOut, stepNotes, electricity
+    planStatus, extraItems,
+    stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
+    kitchen, plasterThermalRender,
+    pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
+    airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
+    stepNotes, electricity
   ]);
 
   // Item 4: villas 1,2,4,9,20,21 are single-story — stairs step (id 3) is hidden entirely.
@@ -519,12 +511,15 @@ export default function App() {
       setTenantName(data.tenant_name ?? '');
       const s = data.selections;
       if (s && typeof s === 'object') {
-        if (s.aluminum) setAluminum(s.aluminum);
+        if (s.planStatus) setPlanStatus(s.planStatus);
+        if (s.extraItems) setExtraItems(s.extraItems);
         if (s.stairs !== undefined) setStairs(s.stairs);
         if (s.stairsFlightQty !== undefined) setStairsFlightQty(s.stairsFlightQty);
+        if (s.stairsCustomNote !== undefined) setStairsCustomNote(s.stairsCustomNote);
         if (s.railings !== undefined) setRailings(s.railings);
         if (s.railingsQty !== undefined) setRailingsQty(s.railingsQty);
         if (s.railingsColor) setRailingsColor(s.railingsColor);
+        if (s.railingsCustomNote !== undefined) setRailingsCustomNote(s.railingsCustomNote);
         if (s.kitchen) setKitchen(s.kitchen);
         if (s.plasterThermalRender !== undefined) setPlasterThermalRender(s.plasterThermalRender);
         if (s.pergola !== undefined) setPergola(s.pergola);
@@ -535,6 +530,9 @@ export default function App() {
         if (s.pathQty !== undefined) setPathQty(s.pathQty);
         if (s.underfloorHeating) setUnderfloorHeating(s.underfloorHeating);
         if (s.airconOptOut !== undefined) setAirconOptOut(s.airconOptOut);
+        if (s.airconAnnexAcknowledged !== undefined) setAirconAnnexAcknowledged(s.airconAnnexAcknowledged);
+        if (s.airconAnnexBuyer1Name !== undefined) setAirconAnnexBuyer1Name(s.airconAnnexBuyer1Name);
+        if (s.airconAnnexBuyer2Name !== undefined) setAirconAnnexBuyer2Name(s.airconAnnexBuyer2Name);
         if (s.stepNotes) setStepNotes(s.stepNotes);
         if (s.electricity) setElectricity(s.electricity);
       }
@@ -558,12 +556,41 @@ export default function App() {
     })();
   }, [isLoggedIn, villaNumber]);
 
+  // Item 10: the real fix for "give tenants a way to actually open the plans, not just a link" —
+  // each discipline's PDF is hosted directly in the app at /plans/villa-<N>/<key>.pdf (added
+  // alongside the aluminum ones from item 8). We only know a given villa/discipline combo truly
+  // has a file by asking the server, so a lightweight HEAD check populates availability per
+  // discipline instead of guessing and risking a dead link.
+  const [planFileAvailable, setPlanFileAvailable] = useState({});
+  useEffect(() => {
+    if (!isLoggedIn || !villaNumber) return;
+    let cancelled = false;
+    (async () => {
+      const entries = await Promise.all(
+        PLAN_DISCIPLINES.filter(d => d.hasFile).map(async (d) => {
+          try {
+            const res = await fetch(`/plans/villa-${villaNumber}/${d.key}.pdf`, { method: 'HEAD' });
+            return [d.key, res.ok];
+          } catch {
+            return [d.key, false];
+          }
+        })
+      );
+      if (!cancelled) setPlanFileAvailable(Object.fromEntries(entries));
+    })();
+    return () => { cancelled = true; };
+  }, [isLoggedIn, villaNumber]);
+
   // Coordinator-only: save progress to Supabase at any point, without needing signature/submit.
   const handleCoordinatorSave = async () => {
     if (!isSupabaseConfigured) return;
     const selections = {
-      aluminum, stairs, stairsFlightQty, railings, railingsQty, railingsColor, kitchen, plasterThermalRender,
-      pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating, airconOptOut, stepNotes, electricity
+      planStatus, extraItems,
+      stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
+      kitchen, plasterThermalRender,
+      pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
+      airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
+      stepNotes, electricity
     };
     await supabase.from('villas').update({ selections }).eq('villa_number', Number(villaNumber));
   };
@@ -675,30 +702,29 @@ export default function App() {
     let unpricedItemsSelected = false;
     let subtotal = 0;
 
-    // Aluminum sliding door
-    const slidingModel = ALUMINUM_MODELS.sliding.find(m => m.id === aluminum.selectedSliding);
-    if (slidingModel) subtotal += slidingModel.price * aluminum.slidingQty;
-
-    // Aluminum window
-    const windowModel = ALUMINUM_MODELS.window.find(m => m.id === aluminum.selectedWindow);
-    if (windowModel) subtotal += windowModel.price * aluminum.windowQty;
-
-    // Aluminum hinged door
-    const doorModel = ALUMINUM_MODELS.door.find(m => m.id === aluminum.selectedDoor);
-    if (doorModel) subtotal += doorModel.price * aluminum.doorQty;
-
-    // Stairs (only counted when the step actually applies to this villa)
+    // Stairs (only counted when the step actually applies to this villa). A null price means
+    // "custom option" (item 13) — treated like any other unresolved price until the coordinator
+    // fills it in, same mechanism as the other unpriced categories below.
     if (!isSingleStoryVilla) {
       const stairsOpt = STAIRS_OPTIONS.find(o => o.id === stairs);
-      if (stairsOpt) subtotal += stairsOpt.price;
+      if (stairsOpt) {
+        if (stairsOpt.price === null) unpricedItemsSelected = true;
+        else subtotal += stairsOpt.price;
+      }
     }
 
-    // Railings (priced per linear meter — item 5)
+    // Railings (priced per linear meter — item 5). Same null-price = "custom option" handling.
     const railingsOpt = RAILINGS_OPTIONS.find(o => o.id === railings);
-    if (railingsOpt) subtotal += railingsOpt.price * railingsQty;
+    if (railingsOpt) {
+      if (railingsOpt.price === null) unpricedItemsSelected = true;
+      else subtotal += railingsOpt.price * railingsQty;
+    }
 
     // Kitchen (item 6) — cost entered by the coordinator once quoted
     if (kitchen.planApproved && kitchen.cost) subtotal += Number(kitchen.cost) || 0;
+
+    // Item 5: coordinator-added ad-hoc line items
+    extraItems.forEach(it => { subtotal += Number(it.cost) || 0; });
 
     // Plaster thermal render add-on (item 7)
     if (plasterThermalRender) subtotal += PLASTER_THERMAL_RENDER_PRICE;
@@ -748,14 +774,22 @@ export default function App() {
 
   const pricing = getSelectionPricing();
 
+  // Item 19: opting out of the contractor's aircon package requires acknowledging the annex
+  // (with both buyers' names) before final submit is allowed — same gate as an unpriced item.
+  const airconAnnexBlocking = airconOptOut && !airconAnnexAcknowledged;
+  const canSubmit = !pricing.unpricedItemsSelected && !airconAnnexBlocking;
+
   const handleNext = () => {
     const idx = visibleSteps.findIndex(s => s.id === currentStep);
     if (idx >= 0 && idx < visibleSteps.length - 1) setCurrentStep(visibleSteps[idx + 1].id);
   };
 
+  // Goes through window.history.back() (consumed by the popstate handler above) rather than
+  // setting currentStep directly, so the in-app "הקודם" button and the hardware/gesture back
+  // button always produce the exact same result and never desync the pushed history stack.
   const handlePrev = () => {
     const idx = visibleSteps.findIndex(s => s.id === currentStep);
-    if (idx > 0) setCurrentStep(visibleSteps[idx - 1].id);
+    if (idx > 0) window.history.back();
   };
 
   const handleLogin = (e) => {
@@ -772,14 +806,17 @@ export default function App() {
   };
 
   const handleSubmit = async () => {
-    if (isConfirmed && hasSignature && !pricing.unpricedItemsSelected) {
+    if (isConfirmed && hasSignature && canSubmit) {
       if (isSupabaseConfigured) {
         try {
           await supabase.rpc('submit_selections', {
             payload: {
-              aluminum, stairs, stairsFlightQty, railings, railingsQty, railingsColor, kitchen, plasterThermalRender,
-              pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating, airconOptOut, stepNotes,
-              electricity, pricing
+              planStatus, extraItems,
+              stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
+              kitchen, plasterThermalRender,
+              pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
+              airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
+              stepNotes, electricity, pricing
             }
           });
         } catch {
@@ -879,11 +916,10 @@ export default function App() {
 
             <h3 style={{ marginBottom: '1rem' }}>הנושאים לבחירה בתהליך:</h3>
             <div className="intro-grid">
-              <div className="intro-mini-card"><span>📐</span> אישור תכניות</div>
-              <div className="intro-mini-card"><span>🖼️</span> אלומיניום</div>
+              <div className="intro-mini-card"><span>📐</span> אישור תכניות (כולל אלומיניום ומטבח)</div>
+              <div className="intro-mini-card"><span>✅</span> תכניות סופיות לאחר שינויים</div>
               <div className="intro-mini-card"><span>🪜</span> מדרגות</div>
               <div className="intro-mini-card"><span>⛓️</span> מעקות</div>
-              <div className="intro-mini-card"><span>🍳</span> מטבח</div>
               <div className="intro-mini-card"><span>🎨</span> תוספת טיח</div>
               <div className="intro-mini-card"><span>⛱️</span> פרגולה</div>
               <div className="intro-mini-card"><span>🚪</span> דלתות חוץ</div>
@@ -911,224 +947,148 @@ export default function App() {
           </div>
         );
 
-      case 2: // Plan approval (item 2) — external share links per discipline, managed by admin/coordinator
+      case 2: // Plan approval (items 2, 6, 8, 9, 10, 14, 15) — every discipline including
+              // aluminum (item 8) and kitchen (item 14), each with a real openable PDF where one
+              // exists (item 10), a "no more changes" flag (items 6/9), and free-text notes (item 15).
         return (
           <div>
             <div className="page-title-section">
               <h2>אישור תכניות</h2>
-              <p className="page-intro-text">תכניות וילה {villaNumber} — אינסטלציה, חשמל, אדריכלות ומיזוג אוויר</p>
+              <p className="page-intro-text">תכניות וילה {villaNumber}, לפי תחום. סמנו "אין ברצוני לבצע שינויים נוספים" כשתכנית מסוימת סופית עבורכם.</p>
             </div>
 
             <div className="highlight-box green">
-              <span>ℹ</span> הקישורים לתכניות מנוהלים ע"י מתאמת השינויים/חברת הניהול. אם קישור חסר, יש לפנות אליהם.
+              <span>ℹ</span> ניתן לפתוח כל תכנית ישירות מכאן. תכנית שתסומן כסופית תופיע גם בפרק "תכניות סופיות לאחר שינויים".
             </div>
 
             <div className="options-grid" style={{ marginTop: '1.5rem' }}>
-              {[
-                { key: 'architecture', label: 'אדריכלות', icon: '🏛️' },
-                { key: 'electricity', label: 'חשמל', icon: '🔌' },
-                { key: 'plumbing', label: 'אינסטלציה', icon: '🚰' },
-                { key: 'hvac', label: 'מיזוג אוויר', icon: '❄️' }
-              ].map(d => (
-                <div key={d.key} className="option-card" style={{ minHeight: 'auto', cursor: 'default' }}>
-                  <div className="option-card-header">
-                    <span className="option-title">{d.icon} {d.label}</span>
+              {PLAN_DISCIPLINES.map(d => {
+                const status = planStatus[d.key] ?? { noMoreChanges: false, notes: '' };
+                const hasLocalFile = d.hasFile && planFileAvailable[d.key];
+                const externalUrl = planLinks[d.key];
+                const openUrl = hasLocalFile ? `/plans/villa-${villaNumber}/${d.key}.pdf` : externalUrl;
+                return (
+                  <div key={d.key} className="option-card" style={{ minHeight: 'auto', cursor: 'default' }}>
+                    <div className="option-card-header">
+                      <span className="option-title">{d.icon} {d.label}</span>
+                    </div>
+
+                    {openUrl ? (
+                      <a href={openUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ marginTop: '0.75rem', display: 'inline-block' }}>
+                        פתיחת תכנית {d.label} ↗
+                      </a>
+                    ) : (
+                      <p className="muted-text" style={{ marginTop: '0.75rem' }}>
+                        {d.hasFile ? 'טרם הועלתה תכנית — יש לפנות למתאמת השינויים' : 'יש לתאם צפייה מול מתאמת השינויים'}
+                      </p>
+                    )}
+
+                    {/* Item 14: kitchen's plan-approval checkbox, color, and coordinator-only cost — relocated here, cost field unchanged */}
+                    {d.key === 'kitchen' && (
+                      <div style={{ marginTop: '1rem', borderTop: '1px dashed var(--line)', paddingTop: '0.75rem' }}>
+                        <label className="checkbox-container" style={{ margin: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={kitchen.planApproved}
+                            onChange={(e) => setKitchen({ ...kitchen, planApproved: e.target.checked })}
+                          />
+                          <span className="checkbox-text">אני מאשר/ת את תכנית המטבח כפי שהוצגה</span>
+                        </label>
+                        <div className="swatch-group" style={{ marginTop: '0.75rem' }}>
+                          <div className="swatch-label">גוון מטבח שנבחר:</div>
+                          <input
+                            type="text"
+                            className="form-control"
+                            style={{ marginTop: '0.4rem' }}
+                            placeholder="לדוגמה: אפור מט / לבן high-gloss / אלון טבעי"
+                            value={kitchen.color}
+                            onChange={(e) => setKitchen({ ...kitchen, color: e.target.value })}
+                          />
+                        </div>
+                        <div className="panel-row" style={{ marginTop: '0.75rem', borderBottom: 'none' }}>
+                          <span className="panel-row-label">עלות מטבח (נקבעת ע"י מתאמת השינויים):</span>
+                          <input
+                            type="number"
+                            className="form-control"
+                            style={{ maxWidth: '140px' }}
+                            value={kitchen.cost}
+                            disabled={!isCoordinator}
+                            onChange={(e) => setKitchen({ ...kitchen, cost: e.target.value })}
+                          />
+                        </div>
+                        {!isCoordinator && (
+                          <p className="muted-text" style={{ fontSize: '0.8rem', marginTop: '0.4rem' }}>שדה העלות נקבע ע"י מתאמת שינויי הדיירים בלבד.</p>
+                        )}
+                      </div>
+                    )}
+
+                    <label className="checkbox-container" style={{ marginTop: '1rem' }}>
+                      <input
+                        type="checkbox"
+                        checked={status.noMoreChanges}
+                        onChange={(e) => updatePlanStatus(d.key, { noMoreChanges: e.target.checked })}
+                      />
+                      <span className="checkbox-text">התכנית סופית, אין ברצוני לבצע שינויים נוספים</span>
+                    </label>
+
+                    <div className="swatch-group" style={{ marginTop: '0.75rem' }}>
+                      <div className="swatch-label" style={{ fontSize: '0.85rem' }}>הערות לתכנית זו:</div>
+                      <textarea
+                        className="form-control"
+                        style={{ width: '100%', minHeight: '60px', marginTop: '0.35rem' }}
+                        value={status.notes}
+                        onChange={(e) => updatePlanStatus(d.key, { notes: e.target.value })}
+                      />
+                    </div>
                   </div>
-                  {planLinks[d.key] ? (
-                    <a href={planLinks[d.key]} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ marginTop: '0.75rem', display: 'inline-block' }}>
-                      פתיחת תכנית {d.label} ↗
-                    </a>
-                  ) : (
-                    <p className="muted-text" style={{ marginTop: '0.75rem' }}>טרם הועלה קישור לתכנית זו</p>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         );
 
-      case 3: // Aluminum (Visual Swatches, Popups, Exact pricing)
+      case 3: { // Item 11: "finalized plans" is a live filtered mirror of case 2's data — never a
+                // separate copy that could drift out of sync — so it always reflects the same
+                // noMoreChanges flags and notes the tenant (or coordinator) set above.
+        const finalizedDisciplines = PLAN_DISCIPLINES.filter(d => planStatus[d.key]?.noMoreChanges);
         return (
           <div>
             <div className="page-title-section">
-              <h2>אלומיניום — ויטרינות וחלונות</h2>
-              <p className="page-intro-text">בחירת דגמי פרופיל, גוונים וכמויות. לחץ על דגם לפתיחת מפרט טכני מורחב.</p>
+              <h2>תכניות סופיות לאחר שינויים</h2>
+              <p className="page-intro-text">תכניות שסומנו כסופיות, ללא שינויים נוספים</p>
             </div>
-
-            <div className="warning-alert-banner">
-              <span>⚠</span>
-              שים לב: לא ניתן לשלב דגמים שונים באותו חלל (לדוגמה: 2 ויטרינות באותו סלון – שתיהן חייבות להיות מאותו דגם).
-            </div>
-
-            {/* 1. Sliding Window/Door model */}
-            <h3 style={{ marginTop: '2rem', borderBottom: '1px solid var(--line)', paddingBottom: '0.5rem' }}>1. דגם ויטרינה (דלתות הזזה)</h3>
-            <div className="options-grid">
-              {ALUMINUM_MODELS.sliding.map(model => (
-                <div 
-                  key={model.id}
-                  className={`option-card ${aluminum.selectedSliding === model.id ? 'selected' : ''}`}
-                  onClick={() => setAluminum({ ...aluminum, selectedSliding: model.id })}
-                >
-                  <div className="option-card-header">
-                    <div>
-                      <span className="option-title" style={{ display: 'block' }}>{model.name}</span>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--olive-dark)', cursor: 'pointer', textDecoration: 'underline' }} onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveModal({ title: model.name, content: model.fullSpec });
-                      }}>
-                        🔍 לחץ למפרט המלא
-                      </span>
+            {finalizedDisciplines.length === 0 ? (
+              <p className="muted-text">טרם סומנה אף תכנית כסופית. ניתן לסמן תכניות בפרק "אישור תכניות".</p>
+            ) : (
+              <div className="options-grid">
+                {finalizedDisciplines.map(d => {
+                  const hasLocalFile = d.hasFile && planFileAvailable[d.key];
+                  const externalUrl = planLinks[d.key];
+                  const openUrl = hasLocalFile ? `/plans/villa-${villaNumber}/${d.key}.pdf` : externalUrl;
+                  return (
+                    <div key={d.key} className="option-card" style={{ minHeight: 'auto', cursor: 'default' }}>
+                      <div className="option-card-header">
+                        <span className="option-title">{d.icon} {d.label}</span>
+                        <span className="price-badge standard">סופי ✓</span>
+                      </div>
+                      {openUrl ? (
+                        <a href={openUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ marginTop: '0.75rem', display: 'inline-block' }}>
+                          פתיחת תכנית ↗
+                        </a>
+                      ) : (
+                        <p className="muted-text" style={{ marginTop: '0.75rem' }}>אין קובץ תכנית זמין</p>
+                      )}
+                      {planStatus[d.key]?.notes && (
+                        <p style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>{planStatus[d.key].notes}</p>
+                      )}
                     </div>
-                    <div className="select-badge">
-                      {aluminum.selectedSliding === model.id && '✓'}
-                    </div>
-                  </div>
-                  <p className="option-description" style={{ fontSize: '0.9rem' }}>{model.desc}</p>
-                  <div className="option-card-footer">
-                    {model.rating && <span className="price-badge standard" style={{ marginLeft: '0.5rem' }}>מדרג איטום רוח/מים: {model.rating}</span>}
-                    <span className="price-badge upgrade">₪{model.price.toLocaleString()} / מ"ר</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="selection-details-panel" style={{ marginBottom: '2.5rem' }}>
-              <div className="panel-row">
-                <span className="panel-row-label">כמות ויטרינה מתוכננת (במ"ר):</span>
-                <div className="qty-stepper">
-                  <button className="qty-btn" onClick={() => setAluminum({ ...aluminum, slidingQty: Math.max(1, aluminum.slidingQty - 1) })}>-</button>
-                  <input type="text" className="qty-value" readOnly value={aluminum.slidingQty} />
-                  <button className="qty-btn" onClick={() => setAluminum({ ...aluminum, slidingQty: aluminum.slidingQty + 1 })}>+</button>
-                </div>
+                  );
+                })}
               </div>
-            </div>
-
-            {/* 2. Window model */}
-            <h3 style={{ marginTop: '2rem', borderBottom: '1px solid var(--line)', paddingBottom: '0.5rem' }}>2. דגם חלון קבוע/הזזה</h3>
-            <div className="options-grid">
-              {ALUMINUM_MODELS.window.map(model => (
-                <div 
-                  key={model.id}
-                  className={`option-card ${aluminum.selectedWindow === model.id ? 'selected' : ''}`}
-                  onClick={() => setAluminum({ ...aluminum, selectedWindow: model.id })}
-                >
-                  <div className="option-card-header">
-                    <div>
-                      <span className="option-title" style={{ display: 'block' }}>{model.name}</span>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--olive-dark)', cursor: 'pointer', textDecoration: 'underline' }} onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveModal({ title: model.name, content: model.fullSpec });
-                      }}>
-                        🔍 לחץ למפרט המלא
-                      </span>
-                    </div>
-                    <div className="select-badge">
-                      {aluminum.selectedWindow === model.id && '✓'}
-                    </div>
-                  </div>
-                  <p className="option-description" style={{ fontSize: '0.9rem' }}>{model.desc}</p>
-                  <div className="option-card-footer">
-                    {model.rating && <span className="price-badge standard" style={{ marginLeft: '0.5rem' }}>מדרג איטום רוח/מים: {model.rating}</span>}
-                    <span className="price-badge upgrade">₪{model.price.toLocaleString()} / מ"ר</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="selection-details-panel" style={{ marginBottom: '2.5rem' }}>
-              <div className="panel-row">
-                <span className="panel-row-label">כמות חלונות מתוכננת (במ"ר):</span>
-                <div className="qty-stepper">
-                  <button className="qty-btn" onClick={() => setAluminum({ ...aluminum, windowQty: Math.max(1, aluminum.windowQty - 1) })}>-</button>
-                  <input type="text" className="qty-value" readOnly value={aluminum.windowQty} />
-                  <button className="qty-btn" onClick={() => setAluminum({ ...aluminum, windowQty: aluminum.windowQty + 1 })}>+</button>
-                </div>
-              </div>
-            </div>
-
-            {/* 3. Hinged Door model */}
-            <h3 style={{ marginTop: '2rem', borderBottom: '1px solid var(--line)', paddingBottom: '0.5rem' }}>3. דגם דלת כנף (ציר)</h3>
-            <div className="options-grid">
-              {ALUMINUM_MODELS.door.map(model => (
-                <div 
-                  key={model.id}
-                  className={`option-card ${aluminum.selectedDoor === model.id ? 'selected' : ''}`}
-                  onClick={() => setAluminum({ ...aluminum, selectedDoor: model.id })}
-                >
-                  <div className="option-card-header">
-                    <div>
-                      <span className="option-title" style={{ display: 'block' }}>{model.name}</span>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--olive-dark)', cursor: 'pointer', textDecoration: 'underline' }} onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveModal({ title: model.name, content: model.fullSpec });
-                      }}>
-                        🔍 לחץ למפרט המלא
-                      </span>
-                    </div>
-                    <div className="select-badge">
-                      {aluminum.selectedDoor === model.id && '✓'}
-                    </div>
-                  </div>
-                  <p className="option-description" style={{ fontSize: '0.9rem' }}>{model.desc}</p>
-                  <div className="option-card-footer">
-                    {model.rating && <span className="price-badge standard" style={{ marginLeft: '0.5rem' }}>מדרג איטום רוח/מים: {model.rating}</span>}
-                    <span className="price-badge upgrade">₪{model.price.toLocaleString()} / {model.unit}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="selection-details-panel" style={{ marginBottom: '2.5rem' }}>
-              <div className="panel-row">
-                <span className="panel-row-label">כמות דלתות כנף (קומפלט):</span>
-                <div className="qty-stepper">
-                  <button className="qty-btn" onClick={() => setAluminum({ ...aluminum, doorQty: Math.max(1, aluminum.doorQty - 1) })}>-</button>
-                  <input type="text" className="qty-value" readOnly value={aluminum.doorQty} />
-                  <button className="qty-btn" onClick={() => setAluminum({ ...aluminum, doorQty: aluminum.doorQty + 1 })}>+</button>
-                </div>
-              </div>
-            </div>
-
-            {/* 4. Swatch settings with visual aid color circles */}
-            <h3 style={{ marginTop: '2rem', borderBottom: '1px solid var(--line)', paddingBottom: '0.5rem' }}>4. גווני אלומיניום (אחיד לכל הבית)</h3>
-            <div className="selection-details-panel">
-              <div className="swatch-group" style={{ marginBottom: '1.5rem' }}>
-                <div className="swatch-label">גוון פרופיל אלומיניום:</div>
-                <div className="color-photo-grid">
-                  {ALUMINUM_COLORS.map(color => (
-                    <button
-                      key={color.name}
-                      type="button"
-                      className={`color-photo-btn ${aluminum.profileColor === color.name ? 'active' : ''}`}
-                      onClick={() => setAluminum({ ...aluminum, profileColor: color.name })}
-                    >
-                      <img src={color.image} alt={color.name} className="color-photo-img zoomable-img" onClick={(e) => openLightbox(e, color.image, color.name)} />
-                      <span className="color-photo-label">{color.name}</span>
-                      <span className="muted-text" style={{ fontSize: '0.75rem' }}>מס' גוון: {color.code}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="swatch-group">
-                <div className="swatch-label">גוון רפפות / צלונים:</div>
-                <div className="color-photo-grid">
-                  {BLINDS_COLORS.map(color => (
-                    <button
-                      key={color.name}
-                      type="button"
-                      className={`color-photo-btn ${aluminum.blindsColor === color.name ? 'active' : ''}`}
-                      onClick={() => setAluminum({ ...aluminum, blindsColor: color.name })}
-                    >
-                      <img src={color.image} alt={color.name} className="color-photo-img zoomable-img" onClick={(e) => openLightbox(e, color.image, color.name)} />
-                      <span className="color-photo-label">{color.name}</span>
-                      <span className="muted-text" style={{ fontSize: '0.75rem' }}>מס' גוון: {color.code}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         );
+      }
 
       case 4: // Stairs (with real generated images)
         return (
@@ -1165,6 +1125,8 @@ export default function App() {
                   <div className="option-card-footer">
                     {opt.price === 0 ? (
                       <span className="price-badge standard">כלול בסטנדרט (₪0)</span>
+                    ) : opt.price === null ? (
+                      <span className="price-badge unpriced">יש להוסיף מחיר — פנה למתאמת השינויים</span>
                     ) : (
                       <span className="price-badge upgrade">+ ₪{opt.price.toLocaleString()}</span>
                     )}
@@ -1172,6 +1134,20 @@ export default function App() {
                 </div>
               ))}
             </div>
+
+            {/* Item 13: custom option — free-text so the tenant can describe what they want */}
+            {stairs === 'custom' && (
+              <div className="selection-details-panel" style={{ marginTop: '1.5rem' }}>
+                <div className="swatch-label">תיאור האפשרות המבוקשת:</div>
+                <textarea
+                  className="form-control"
+                  style={{ width: '100%', minHeight: '70px', marginTop: '0.5rem' }}
+                  placeholder="תארו את דגם המדרגות המבוקש — נתאם את הפרטים המדויקים בפגישה עם מתאמת השינויים"
+                  value={stairsCustomNote}
+                  onChange={(e) => setStairsCustomNote(e.target.value)}
+                />
+              </div>
+            )}
 
             {/* Item 4: כמות גרמים לפי מפלסים — for multi-story villas only */}
             {showStairsFlightQty && (
@@ -1228,6 +1204,8 @@ export default function App() {
                   <div className="option-card-footer">
                     {opt.price === 0 ? (
                       <span className="price-badge standard">כלול בסטנדרט (₪0)</span>
+                    ) : opt.price === null ? (
+                      <span className="price-badge unpriced">יש להוסיף מחיר — פנה למתאמת השינויים</span>
                     ) : (
                       <span className="price-badge upgrade">₪{opt.price.toLocaleString()} / {opt.unit}</span>
                     )}
@@ -1235,6 +1213,20 @@ export default function App() {
                 </div>
               ))}
             </div>
+
+            {/* Item 13: custom option — free-text so the tenant can describe what they want */}
+            {railings === 'custom' && (
+              <div className="selection-details-panel" style={{ marginTop: '1.5rem' }}>
+                <div className="swatch-label">תיאור האפשרות המבוקשת:</div>
+                <textarea
+                  className="form-control"
+                  style={{ width: '100%', minHeight: '70px', marginTop: '0.5rem' }}
+                  placeholder="תארו את דגם המעקה המבוקש — נתאם את הפרטים המדויקים בפגישה עם מתאמת השינויים"
+                  value={railingsCustomNote}
+                  onChange={(e) => setRailingsCustomNote(e.target.value)}
+                />
+              </div>
+            )}
 
             <div className="selection-details-panel" style={{ marginTop: '2rem' }}>
               <div className="panel-row">
@@ -1267,59 +1259,7 @@ export default function App() {
           </div>
         );
 
-      case 6: // Kitchen (item 6) — plan approval, color, cost
-        return (
-          <div>
-            <div className="page-title-section">
-              <h2>מטבח</h2>
-              <p className="page-intro-text">אישור תכנית מטבח, גוון ועלות</p>
-            </div>
-
-            <div className="highlight-box green">
-              <span>ℹ</span> תכנית המטבח המפורטת נמצאת בתיקיית התכניות של הוילה (מגרש {villaNumber}). יש לתאם עם מתאמת השינויים לצפייה ואישור.
-            </div>
-
-            <label className="checkbox-container" style={{ marginTop: '1.5rem', backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <input
-                type="checkbox"
-                checked={kitchen.planApproved}
-                onChange={(e) => setKitchen({ ...kitchen, planApproved: e.target.checked })}
-              />
-              <span className="checkbox-text">אני מאשר/ת את תכנית המטבח כפי שהוצגה</span>
-            </label>
-
-            <div className="selection-details-panel" style={{ marginTop: '1.5rem' }}>
-              <div className="swatch-group">
-                <div className="swatch-label">גוון מטבח שנבחר:</div>
-                <input
-                  type="text"
-                  className="form-control"
-                  style={{ marginTop: '0.5rem' }}
-                  placeholder="לדוגמה: אפור מט / לבן high-gloss / אלון טבעי"
-                  value={kitchen.color}
-                  onChange={(e) => setKitchen({ ...kitchen, color: e.target.value })}
-                />
-              </div>
-
-              <div className="panel-row" style={{ marginTop: '1.25rem' }}>
-                <span className="panel-row-label">עלות מטבח (נקבעת ע"י מתאמת השינויים מול ספק המטבחים):</span>
-                <input
-                  type="number"
-                  className="form-control"
-                  style={{ maxWidth: '160px' }}
-                  value={kitchen.cost}
-                  disabled={!isCoordinator}
-                  onChange={(e) => setKitchen({ ...kitchen, cost: e.target.value })}
-                />
-              </div>
-              {!isCoordinator && (
-                <p className="muted-text" style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>שדה העלות נקבע ומעודכן ע"י מתאמת שינויי הדיירים בלבד.</p>
-              )}
-            </div>
-          </div>
-        );
-
-      case 7: // Plaster add-on (item 7: color picker removed, only the thermal render option remains)
+      case 6: // Plaster add-on (item 7: color picker removed, only the thermal render option remains)
         return (
           <div>
             <div className="page-title-section">
@@ -1348,7 +1288,7 @@ export default function App() {
           </div>
         );
 
-      case 8: // Pergola (priced per sqm)
+      case 7: // Pergola (priced per sqm)
         return (
           <div>
             <div className="page-title-section">
@@ -1406,7 +1346,7 @@ export default function App() {
           </div>
         );
 
-      case 9: // Exterior Doors (real photos per model, drill-down full spec)
+      case 8: // Exterior Doors (real photos per model, drill-down full spec)
         return (
           <div>
             <div className="page-title-section">
@@ -1463,7 +1403,7 @@ export default function App() {
           </div>
         );
 
-      case 10: // Interior Doors (item 9: flat per-unit pricing, total door count, ממ"ד wood-leaf add-on)
+      case 9: // Interior Doors (item 9: flat per-unit pricing, total door count, ממ"ד wood-leaf add-on)
         return (
           <div>
             <div className="page-title-section">
@@ -1589,7 +1529,7 @@ export default function App() {
           </div>
         );
 
-      case 11: // Entrance Path (with visual representations)
+      case 10: // Entrance Path (with visual representations)
         return (
           <div>
             <div className="page-title-section">
@@ -1641,7 +1581,7 @@ export default function App() {
           </div>
         );
 
-      case 12: // Underfloor heating (item 10) — new, before the electric/plumbing step
+      case 11: // Underfloor heating (item 10) — new, before the electric/plumbing step
         return (
           <div>
             <div className="page-title-section">
@@ -1682,7 +1622,7 @@ export default function App() {
           </div>
         );
 
-      case 13: // Aircon — Tadiran (item 11) — new, before the electric/plumbing step
+      case 12: // Aircon — Tadiran (item 11) — new, before the electric/plumbing step
         return (
           <div>
             <div className="page-title-section">
@@ -1716,15 +1656,59 @@ export default function App() {
               </span>
             </label>
 
+            {/* Item 19: full annex text shown and acknowledged in-app instead of a separate
+                off-app signing link. Required before final submit (see airconAnnexBlocking). */}
             {airconOptOut && (
-              <div className="warning-alert-banner" style={{ marginTop: '1rem' }}>
-                <span>⚠</span> יש לחתום על נספח ביטול מיזוג אוויר להסכם — פנה למתאמת השינויים לקבלת קישור החתימה.
+              <div className="selection-details-panel" style={{ marginTop: '1.5rem' }}>
+                <h3 style={{ marginBottom: '1rem', fontSize: '1.15rem', fontFamily: 'var(--font-serif)' }}>
+                  נספח להסכם / טופס הצהרה והתחייבות רוכש — ויתור על הזמנת מערכת מיזוג אוויר דרך הקבלן המבצע
+                </h3>
+                <div style={{ fontSize: '0.95rem', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+{`שם הפרויקט: פרויקט 24 קוטג'ים, אלפי מנשה.
+
+הואיל ובהתאם למפרט הטכני ולהסכם המכר, תכולת העבודה של הקבלן ביחידה כוללת ביצוע הכנות למיזוג אוויר בלבד (צנרת גז, צנרת ניקוז והזנות חשמל) ואינה כוללת את אספקת והתקנת יחידות המיזוג וסגירות הגבס הנלוות אליהן.
+והואיל והקבלן הציע לרוכשים אופציה להזמנה ולביצוע מושלם של מערכת מיזוג האוויר כחלק מעבודות הקבלן.
+והואיל והרוכשים בחרו שלא לרכוש את מערכת מיזוג האוויר דרך הקבלן, אלא להתקינה באופן עצמאי ובאחריותם הבלעדית באמצעות מתקין מטעמם לאחר מועד מסירת החזקה.
+
+הרוכשים מצהירים ומתחייבים:
+1. העדר אחריות להתקנה ולצנרת ההכנות, כולל אחריות בלעדית לכל נזק שייגרם לצנרת הגז/ניקוז/חשמל כתוצאה מעבודת מתקין חיצוני.
+2. הקבלן לא יבצע סגירות גבס/הנמכות תקרה/סינרי גבס סביב יחידות המיזוג, עבודות אלו יבוצעו ע"י הרוכשים ועל חשבונם לאחר מסירת החזקה.
+3. איסור כניסת מתקינים/קבלני גבס מטעם הרוכשים לאתר לפני טופס 4 וסיום מסירה סופית, עם התחייבות לשיפוי הקבלן על נזק כתוצאה מהפרה.`}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.5rem' }}>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label htmlFor="airconBuyer1">שם רוכש 1</label>
+                    <input type="text" id="airconBuyer1" className="form-control" value={airconAnnexBuyer1Name} onChange={(e) => setAirconAnnexBuyer1Name(e.target.value)} />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label htmlFor="airconBuyer2">שם רוכש 2</label>
+                    <input type="text" id="airconBuyer2" className="form-control" value={airconAnnexBuyer2Name} onChange={(e) => setAirconAnnexBuyer2Name(e.target.value)} />
+                  </div>
+                </div>
+
+                <label className="checkbox-container" style={{ marginTop: '1.25rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={airconAnnexAcknowledged}
+                    onChange={(e) => setAirconAnnexAcknowledged(e.target.checked)}
+                  />
+                  <span className="checkbox-text">
+                    קראנו את נוסח הנספח לעיל ומאשרים את תוכנו. החתימה על נספח זה מתבצעת יחד עם החתימה הדיגיטלית הסופית בעמוד הסיכום.
+                  </span>
+                </label>
+
+                {!airconAnnexAcknowledged && (
+                  <div className="warning-alert-banner" style={{ marginTop: '1rem' }}>
+                    <span>⚠</span> יש לאשר את נוסח הנספח לפני שניתן יהיה לשלוח את הטופס לאישור סופי.
+                  </div>
+                )}
               </div>
             )}
           </div>
         );
 
-      case 14: // Electricity & Plumbing (item 12: renamed)
+      case 13: // Electricity & Plumbing (item 12: renamed)
         return (
           <div>
             <div className="page-title-section">
@@ -1791,7 +1775,7 @@ export default function App() {
           </div>
         );
 
-      case 15: // Summary & Digital Signature (item 14: grouped notes shown here)
+      case 14: // Summary & Digital Signature (item 14: grouped notes shown here)
         return (
           <div>
             <div className="page-title-section">
@@ -1804,6 +1788,14 @@ export default function App() {
               <div className="warning-alert-banner">
                 <span>⚠</span>
                 ישנם פריטים שנבחרו ללא מחיר סופי (למשל וילה ללא מחיר מיזוג אוויר) – יש לפנות למתאמת השינויים להשלמת המחיר לפני חתימה סופית.
+              </div>
+            )}
+
+            {/* Item 19: annex-not-acknowledged blocks submit the same way an unpriced item does */}
+            {airconAnnexBlocking && (
+              <div className="warning-alert-banner">
+                <span>⚠</span>
+                יש לאשר את נספח ויתור מיזוג האוויר (בפרק "מיזוג אוויר") לפני חתימה סופית.
               </div>
             )}
 
@@ -1820,44 +1812,22 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* Aluminum */}
-                  <tr>
-                    <td><strong>אלומיניום (ויטרינה)</strong></td>
-                    <td>{ALUMINUM_MODELS.sliding.find(m => m.id === aluminum.selectedSliding)?.name}</td>
-                    <td>פרופיל: {aluminum.profileColor} · צלונים: {aluminum.blindsColor}</td>
-                    <td>{aluminum.slidingQty} מ"ר</td>
-                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      ₪{((ALUMINUM_MODELS.sliding.find(m => m.id === aluminum.selectedSliding)?.price || 0) * aluminum.slidingQty).toLocaleString()}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><strong>אלומיניום (חלון)</strong></td>
-                    <td>{ALUMINUM_MODELS.window.find(m => m.id === aluminum.selectedWindow)?.name}</td>
-                    <td>פרופיל: {aluminum.profileColor} · צלונים: {aluminum.blindsColor}</td>
-                    <td>{aluminum.windowQty} מ"ר</td>
-                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      ₪{((ALUMINUM_MODELS.window.find(m => m.id === aluminum.selectedWindow)?.price || 0) * aluminum.windowQty).toLocaleString()}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><strong>אלומיניום (דלת כנף)</strong></td>
-                    <td>{ALUMINUM_MODELS.door.find(m => m.id === aluminum.selectedDoor)?.name}</td>
-                    <td>פרופיל: {aluminum.profileColor} · צלונים: {aluminum.blindsColor}</td>
-                    <td>{aluminum.doorQty} יח'</td>
-                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      ₪{((ALUMINUM_MODELS.door.find(m => m.id === aluminum.selectedDoor)?.price || 0) * aluminum.doorQty).toLocaleString()}
-                    </td>
-                  </tr>
+                  {/* Item 8: aluminum has no pricing row anymore — it's approved as a PDF plan
+                      under "אישור תכניות", already priced directly with the subcontractor. */}
 
                   {/* Stairs (only when relevant to this villa) */}
                   {!isSingleStoryVilla && (
                     <tr>
                       <td><strong>מדרגות</strong></td>
-                      <td>{STAIRS_OPTIONS.find(o => o.id === stairs)?.name}</td>
+                      <td>{STAIRS_OPTIONS.find(o => o.id === stairs)?.name}{stairs === 'custom' && stairsCustomNote ? ` — ${stairsCustomNote}` : ''}</td>
                       <td>{showStairsFlightQty ? `${stairsFlightQty} גרמים` : '—'}</td>
                       <td>1</td>
                       <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                        {STAIRS_OPTIONS.find(o => o.id === stairs)?.price === 0 ? 'כלול בסטנדרט' : `₪${STAIRS_OPTIONS.find(o => o.id === stairs)?.price.toLocaleString()}`}
+                        {STAIRS_OPTIONS.find(o => o.id === stairs)?.price === 0
+                          ? 'כלול בסטנדרט'
+                          : STAIRS_OPTIONS.find(o => o.id === stairs)?.price === null
+                            ? 'יש להוסיף מחיר – פנה למתאמת השינויים'
+                            : `₪${STAIRS_OPTIONS.find(o => o.id === stairs)?.price.toLocaleString()}`}
                       </td>
                     </tr>
                   )}
@@ -1865,11 +1835,15 @@ export default function App() {
                   {/* Railings */}
                   <tr>
                     <td><strong>מעקות</strong></td>
-                    <td>{RAILINGS_OPTIONS.find(o => o.id === railings)?.name}</td>
+                    <td>{RAILINGS_OPTIONS.find(o => o.id === railings)?.name}{railings === 'custom' && railingsCustomNote ? ` — ${railingsCustomNote}` : ''}</td>
                     <td>גוון: {railingsColor}</td>
                     <td>{railingsQty} מ"א</td>
                     <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      {RAILINGS_OPTIONS.find(o => o.id === railings)?.price === 0 ? 'כלול בסטנדרט' : `₪${(RAILINGS_OPTIONS.find(o => o.id === railings)?.price * railingsQty).toLocaleString()}`}
+                      {RAILINGS_OPTIONS.find(o => o.id === railings)?.price === 0
+                        ? 'כלול בסטנדרט'
+                        : RAILINGS_OPTIONS.find(o => o.id === railings)?.price === null
+                          ? 'יש להוסיף מחיר – פנה למתאמת השינויים'
+                          : `₪${(RAILINGS_OPTIONS.find(o => o.id === railings)?.price * railingsQty).toLocaleString()}`}
                     </td>
                   </tr>
 
@@ -1991,9 +1965,54 @@ export default function App() {
                       <td style={{ textAlign: 'left', fontWeight: 'bold' }}>₪0</td>
                     </tr>
                   )}
+
+                  {/* Item 5: coordinator-added ad-hoc line items */}
+                  {extraItems.map(item => (
+                    <tr key={item.id}>
+                      <td><strong>פריט נוסף</strong></td>
+                      <td>{item.description || '—'}</td>
+                      <td>—</td>
+                      <td>—</td>
+                      <td style={{ textAlign: 'left', fontWeight: 'bold' }}>₪{(Number(item.cost) || 0).toLocaleString()}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
+
+            {/* Item 5: only the coordinator can add/edit/remove extra items — a tenant sees the
+                rows above (read-only) but has no way to add to this list from her own login. */}
+            {isCoordinator && (
+              <div className="selection-details-panel" style={{ marginBottom: '1.5rem' }}>
+                <div className="swatch-label" style={{ marginBottom: '0.75rem' }}>פריטים נוספים (מתאמת השינויים בלבד):</div>
+                {extraItems.map(item => (
+                  <div key={item.id} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <input
+                      type="text"
+                      className="form-control"
+                      style={{ flex: 2 }}
+                      placeholder="תיאור הפריט"
+                      value={item.description}
+                      onChange={(e) => updateExtraItem(item.id, { description: e.target.value })}
+                    />
+                    <input
+                      type="number"
+                      className="form-control"
+                      style={{ flex: 1, maxWidth: '140px' }}
+                      placeholder="עלות ₪"
+                      value={item.cost}
+                      onChange={(e) => updateExtraItem(item.id, { cost: e.target.value })}
+                    />
+                    <button type="button" className="btn btn-secondary" style={{ padding: '0.35rem 0.7rem', fontSize: '0.85rem' }} onClick={() => removeExtraItem(item.id)}>
+                      הסר
+                    </button>
+                  </div>
+                ))}
+                <button type="button" className="btn btn-secondary" style={{ marginTop: '0.5rem' }} onClick={addExtraItem}>
+                  + הוספת פריט
+                </button>
+              </div>
+            )}
 
             {/* Financial Summary */}
             <div className="summary-financial-box">
@@ -2095,9 +2114,11 @@ export default function App() {
                   💾 שמירת התקדמות (ללא חתימה סופית)
                 </button>
               )}
-              {pricing.unpricedItemsSelected ? (
+              {!canSubmit ? (
                 <div className="warning-alert-banner" style={{ display: 'inline-flex', maxWidth: '600px', textAlign: 'right' }}>
-                  <span>⚠</span> לא ניתן לשלוח את הטופס לאישור סופי כיוון שישנם פריטים שנבחרו ללא מחיר. אנא פנו למתאמת השינויים להשלמת המחיר.
+                  <span>⚠</span> {pricing.unpricedItemsSelected
+                    ? 'לא ניתן לשלוח את הטופס לאישור סופי כיוון שישנם פריטים שנבחרו ללא מחיר. אנא פנו למתאמת השינויים להשלמת המחיר.'
+                    : 'לא ניתן לשלוח את הטופס לאישור סופי לפני אישור נספח מיזוג האוויר.'}
                 </div>
               ) : (
                 <button
@@ -2283,9 +2304,9 @@ export default function App() {
 
       {/* Interactive technical specification modal popup window */}
       {activeModal && (
-        <div className="modal-overlay" onClick={() => setActiveModal(null)}>
+        <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setActiveModal(null)}>&times;</button>
+            <button className="modal-close" onClick={closeModal}>&times;</button>
             <div className="modal-header">
               <h3 className="modal-title">{activeModal.title}</h3>
             </div>
@@ -2303,8 +2324,8 @@ export default function App() {
 
       {/* Full-size image lightbox */}
       {lightboxImage && (
-        <div className="lightbox-overlay" onClick={() => setLightboxImage(null)}>
-          <button className="lightbox-close" onClick={() => setLightboxImage(null)}>&times;</button>
+        <div className="lightbox-overlay" onClick={closeLightbox}>
+          <button className="lightbox-close" onClick={closeLightbox}>&times;</button>
           <img
             src={lightboxImage.src}
             alt={lightboxImage.alt}
