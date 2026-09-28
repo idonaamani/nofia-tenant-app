@@ -52,9 +52,25 @@ export default function TenantAuthGate({ onSuccess }) {
   const [error, setError] = useState('');
   const [isBusy, setIsBusy] = useState(false);
 
+  // Edge functions signal business-logic failures (invalid_credentials, locked_out, etc.) with a
+  // non-2xx HTTP status + a JSON body like {error: "invalid_credentials"}. supabase-js turns that
+  // into a FunctionsHttpError whose *data* is null — the JSON body only lives on error.context
+  // (the raw Response). Previously this just did `if (fnError) throw fnError`, which discarded
+  // that body entirely, so every business-logic error (wrong ID, locked out, already set up...)
+  // fell through to the generic "something went wrong" message instead of the real one.
   const callFunction = async (name, body) => {
     const { data, error: fnError } = await supabase.functions.invoke(name, { body });
-    if (fnError) throw fnError;
+    if (fnError) {
+      if (fnError.context && typeof fnError.context.json === 'function') {
+        try {
+          const parsed = await fnError.context.json();
+          if (parsed && parsed.error) return parsed;
+        } catch {
+          // context body wasn't JSON (e.g. a network-level failure) — fall through to throw
+        }
+      }
+      throw fnError;
+    }
     return data;
   };
 
@@ -147,7 +163,7 @@ export default function TenantAuthGate({ onSuccess }) {
   return (
     <>
       <h3 style={{ marginBottom: '1.5rem', fontFamily: 'var(--font-serif)', fontSize: '1.5rem' }}>
-        שינויי דיירים — שלב ב'
+        שינויי דיירים
       </h3>
 
       {error && (

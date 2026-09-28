@@ -6,6 +6,7 @@ import TenantAuthGate from './components/TenantAuthGate';
 import stairsStandardImg from './assets/stairs_standard.jpg';
 import stairsSawtoothImg from './assets/stairs_sawtooth.jpg';
 import stairsLightweightImg from './assets/stairs_lightweight.jpg';
+import stairsButcherImg from './assets/stairs_butcher.jpg';
 
 import railingVerticalImg from './assets/railing_vertical.jpg';
 import railingBarcodeImg from './assets/railing_barcode.jpg';
@@ -34,12 +35,14 @@ import pathTravertineImg from './assets/path_travertine.jpg';
 // aluminum scope is already fixed in its subcontractor (Bassel) quote, reviewed as a PDF under
 // the "אישור תכניות" step (see PLAN_DISCIPLINES further down) instead of priced here.
 
-// Item 12: בוצ'ר אלון עובי 3 ס"מ — flat add-on, no official photo yet from מורן (add once supplied).
+// Item 12: בוצ'ר אלון עובי 3 ס"מ — reference photo supplied by Ido 2026-09-23 (from a wood
+// flooring supplier's site, used as a placeholder for the exact grain/finish); swap for מורן's
+// official product photo once she sends it.
 const STAIRS_OPTIONS = [
   { id: 1, name: 'מדרגות סטנדרטיות (בטון, תחתית חלקה)', price: 0, desc: 'מדרגות בטון יצוקות בעלות תחתית ישרה חלקה. כלול במפרט ללא תוספת עלות.', image: stairsStandardImg },
   { id: 2, name: 'מדרגות משוננות (בטון, תחתית משוננת)', price: 15000, desc: 'מדרגות בטון מעוצבות שבהן גם החלק התחתון בנוי בצורה משוננת המלווה את שלבי המדרגות. מראה עיצובי מודרני.', image: stairsSawtoothImg },
   { id: 3, name: 'מדרגות קלות (קונסטרוקציה + עץ גושני)', price: 45000, desc: 'מדרגות קלות ומרחפות המבוססות על קונסטרוקציית פלדה כבדה ומדרכי עץ גושני יוקרתי, למראה אוורירי ופתוח.', image: stairsLightweightImg },
-  { id: 4, name: 'מדרגות בוצ\'ר אלון עובי 3 ס"מ', price: 30000, desc: 'מדרגות עץ אלון מלא בעיבוד בוצ\'ר בעובי 3 ס"מ. תמונת דגם רשמית תתקבל ממורן ותתווסף בהמשך.', image: null },
+  { id: 4, name: 'מדרגות בוצ\'ר אלון עובי 3 ס"מ', price: 30000, desc: 'מדרגות עץ אלון מלא בעיבוד בוצ\'ר בעובי 3 ס"מ. תמונת דגם להמחשה — הגוון הסופי ופרטי הביצוע ייקבעו בתיאום מול מתאמת השינויים.', image: stairsButcherImg },
   { id: 'custom', name: 'אפשרות שאינה כלולה ברשימה', price: null, desc: 'ברצוני לבחור דגם מדרגות אחר, שאינו מופיע כאן. יש לתאם את הפרטים המדויקים מול מתאמת השינויים.', image: null }
 ];
 
@@ -164,6 +167,15 @@ const INT_DOORS_OPTIONS = [
 // mandatory מ"ד-approved leaf costs a flat 1,000 ₪ per door (item 9).
 const MAMAD_WOOD_LEAF_PRICE = 1000;
 
+// Item 9/12: total interior door count per villa, from the developer's door-count spreadsheet
+// ("מטריצת דלתות"), so the price locks in automatically once a door model is chosen — no manual
+// entry or dry/wet split needed. All 24 villas are covered (no gaps, unlike AIRCON_PRICING).
+const DOOR_COUNT_BY_VILLA = {
+  1: 5, 2: 9, 3: 10, 4: 4, 5: 8, 6: 9, 7: 11, 8: 11, 9: 5, 10: 10,
+  11: 11, 12: 9, 13: 12, 14: 13, 15: 11, 16: 7, 17: 10, 18: 11, 19: 15, 20: 4,
+  21: 5, 22: 12, 23: 12, 24: 11
+};
+
 // Underfloor heating (item 10). Verified against הסכם עבודות קבלניות נופיה, סעיף 3.1.9 (עמ' 113):
 // הכנה בלבד (תשתית על בסיס מים) בתוספת 250 ₪/מ"ר לפני מע"מ. הכמות במ"ר ניתנת לעדכון ע"י
 // מתאמת שינויי הדיירים בלבד.
@@ -193,7 +205,15 @@ const PATH_OPTIONS = [
 // is no tenant color choice for the base plaster. The only tenant-facing item here is the
 // optional Peles thermal render (שליכט תרמי) add-on.
 const PLASTER_THERMAL_RENDER_PRICE = 3500;
-const PLASTER_THERMAL_RENDER_VIDEO_NOTE = 'הסרטון המדגים את השליכט התרמי של פלס נמצא בתיקיית שינויי הדיירים של הפרויקט — יש לפנות למתאמת השינויים לקישור הצפייה.';
+const PLASTER_THERMAL_RENDER_VIDEO_NOTE = 'סרטון המדגים את השליכט התרמי של פלס:';
+const PLASTER_THERMAL_RENDER_VIDEO_URL = 'https://www.facebook.com/peles.il/videos/-בניסוי-השוואתי-מעניין-עם-שליכט-אקרילי-תרמי-תרמוקריל-מבית-פלסתשפטו-בעצמכם-מדברים/832743533046495/';
+
+// "תוספות אופציונליות" (end-of-wizard optional add-ons) — flat prices per villa, excl. VAT.
+const WATER_HEATER_UPGRADE_PRICE = 2000; // הגדלת דוד חשמל מ-150 ל-250 ליטר
+const ROOF_HATCH_LADDER_PRICE = 6000; // פתח יציאה לגג + סולם מתקפל, מפרט טכני מצורף
+const AYALOK_SECURITY_PRICE = 3000; // מערכת איילוק — חבילת ביטחון ומיגון לבית
+const GAS_HEATING_SYSTEM_PRICE = 9000; // מערכת חימום בגז כולל צנרת, התקנה ואחריות (פז גז או שווה ערך)
+const ROOF_HATCH_LADDER_SPEC = '• סולם מתכת מגולוונת, צבוע אפוקסי בחלקו, עובי ברזל 2 מ"מ.\n• מתחבר לחלק התחתון של הפתח באמצעות משקוף מתכת צבוע לבן בגובה 14.5 ס"מ.\n• גוף הסולם מחובר למסגרת ע"י שני קפיצים חזקים בקוטר 35 מ"מ, ניתנים לכיוון במספר מצבים.\n• נסגר במישור התקרה ע"י דלת פנל עץ מלא בעובי 16 מ"מ עם סגר מתכת קפיצי.\n• המדרכים מחוברים ל"שמיניות" ע"י ברגים ואומי אבטחה עובי 8 מ"מ מגולוון, עם ארבעה גלגלים במדרגה הראשונה לפיזור עומס.\n• מגיע עם מעקה עליון משני צידי הפתח. מתאים לגובה תקרה עד 3 מטרים, מותקן בזווית 70–75 מעלות.\n• אחריות על כל חלקי הסולם למשך 10 שנים.\n• מגוון רחב של מידות פתח זמינות — המידה הסופית תיקבע בתיאום מול מתאמת השינויים בהתאם למידות פתח הגג בווילה.';
 
 // Prices from "חוברת תוספות ומחירים.xlsx": row 15 (תוספות חשמל, נק' מאור/שקע) covers both
 // light and power points at one price; row 16 (תוספות אינסטלציה, נק' מים/ניקוז) covers water.
@@ -250,7 +270,6 @@ const STEPS = [
   { id: 3, label: 'תכניות סופיות לאחר שינויים', icon: '✅' },
   { id: 4, label: 'מדרגות', icon: '🪜' },
   { id: 5, label: 'מעקות', icon: '⛓️' },
-  { id: 6, label: 'תוספת טיח', icon: '🎨' },
   { id: 7, label: 'פרגולה', icon: '⛱️' },
   { id: 8, label: 'דלתות חוץ', icon: '🚪' },
   { id: 9, label: 'דלתות פנים', icon: '🚪' },
@@ -258,6 +277,9 @@ const STEPS = [
   { id: 11, label: 'חימום תת רצפתי', icon: '🔥' },
   { id: 12, label: 'מיזוג אוויר', icon: '❄️' },
   { id: 13, label: 'שינויי חשמל אינסטלציה ובינוי', icon: '🔌' },
+  // Item 13 (Monday board): relocated here from right after "מעקות" and renamed — same step
+  // id (6) as before, so any already-saved per-step notes/data keyed by id still line up.
+  { id: 6, label: 'תוספות אופציונליות', icon: '🧰' },
   { id: 14, label: 'סיכום וחתימה', icon: '✍️' }
 ];
 const LAST_STEP_ID = STEPS[STEPS.length - 1].id;
@@ -311,14 +333,22 @@ export default function App() {
   // Item 7: plaster color picker removed; only the optional Peles thermal render add-on remains.
   const [plasterThermalRender, setPlasterThermalRender] = useState(() => saved.plasterThermalRender ?? false);
 
+  // Item 13/14 (Monday board): the old "תוספת טיח" step is relocated to the end of the wizard and
+  // renamed "תוספות אופציונליות" — same step id (6), just moved in STEPS and given three more
+  // flat, optional add-ons alongside the existing thermal render.
+  const [waterHeaterUpgrade, setWaterHeaterUpgrade] = useState(() => saved.waterHeaterUpgrade ?? false);
+  const [roofHatchLadder, setRoofHatchLadder] = useState(() => saved.roofHatchLadder ?? false);
+  const [ayalokSecurity, setAyalokSecurity] = useState(() => saved.ayalokSecurity ?? false);
+  const [gasHeatingSystem, setGasHeatingSystem] = useState(() => saved.gasHeatingSystem ?? false);
+
   const [pergola, setPergola] = useState(() => saved.pergola ?? 1); // PERGOLA_OPTIONS ID
   const [pergolaQty, setPergolaQty] = useState(() => saved.pergolaQty ?? 20); // sqm
   const [extDoor, setExtDoor] = useState(() => saved.extDoor ?? 1); // EXT_DOORS_OPTIONS ID
 
-  // Item 9: flat per-unit pricing, one total door count for the villa instead of dry/wet split.
+  // Item 9/12: flat per-unit pricing; total door count now comes from DOOR_COUNT_BY_VILLA
+  // (looked up by villaNumber, see getSelectionPricing) instead of manual entry.
   const [intDoor, setIntDoor] = useState(() => saved.intDoor ?? {
     selectedOption: 'A', // INT_DOORS_OPTIONS ID ('A', 'B', 'C', 'D')
-    doorCount: 7,
     color: 'לבן',
     mamadWoodLeaf: false,
     mamadWoodLeafQty: 1
@@ -461,7 +491,7 @@ export default function App() {
       villaNumber, tenantName, isLoggedIn, currentStep,
       planStatus, extraItems,
       stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
-      kitchen, plasterThermalRender,
+      kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem,
       pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
       airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
       stepNotes, electricity
@@ -475,7 +505,7 @@ export default function App() {
     isSubmitted, villaNumber, tenantName, isLoggedIn, currentStep,
     planStatus, extraItems,
     stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
-    kitchen, plasterThermalRender,
+    kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem,
     pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
     airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
     stepNotes, electricity
@@ -522,6 +552,10 @@ export default function App() {
         if (s.railingsCustomNote !== undefined) setRailingsCustomNote(s.railingsCustomNote);
         if (s.kitchen) setKitchen(s.kitchen);
         if (s.plasterThermalRender !== undefined) setPlasterThermalRender(s.plasterThermalRender);
+        if (s.waterHeaterUpgrade !== undefined) setWaterHeaterUpgrade(s.waterHeaterUpgrade);
+        if (s.roofHatchLadder !== undefined) setRoofHatchLadder(s.roofHatchLadder);
+        if (s.ayalokSecurity !== undefined) setAyalokSecurity(s.ayalokSecurity);
+        if (s.gasHeatingSystem !== undefined) setGasHeatingSystem(s.gasHeatingSystem);
         if (s.pergola !== undefined) setPergola(s.pergola);
         if (s.pergolaQty !== undefined) setPergolaQty(s.pergolaQty);
         if (s.extDoor !== undefined) setExtDoor(s.extDoor);
@@ -587,7 +621,7 @@ export default function App() {
     const selections = {
       planStatus, extraItems,
       stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
-      kitchen, plasterThermalRender,
+      kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem,
       pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
       airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
       stepNotes, electricity
@@ -628,6 +662,7 @@ export default function App() {
   };
 
   const addElectricityPoint = (typeId) => {
+    if (viewOnly) return;
     const newPoint = { id: `${typeId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, note: '' };
     setElectricity({
       ...electricity,
@@ -636,6 +671,7 @@ export default function App() {
   };
 
   const removeElectricityPoint = (typeId, pointId) => {
+    if (viewOnly) return;
     setElectricity({
       ...electricity,
       points: { ...electricity.points, [typeId]: electricity.points[typeId].filter(p => p.id !== pointId) }
@@ -643,6 +679,7 @@ export default function App() {
   };
 
   const updateElectricityPointNote = (typeId, pointId, note) => {
+    if (viewOnly) return;
     setElectricity({
       ...electricity,
       points: { ...electricity.points, [typeId]: electricity.points[typeId].map(p => p.id === pointId ? { ...p, note } : p) }
@@ -726,8 +763,12 @@ export default function App() {
     // Item 5: coordinator-added ad-hoc line items
     extraItems.forEach(it => { subtotal += Number(it.cost) || 0; });
 
-    // Plaster thermal render add-on (item 7)
+    // Optional add-ons (item 13/14): plaster thermal render + the four new flat add-ons
     if (plasterThermalRender) subtotal += PLASTER_THERMAL_RENDER_PRICE;
+    if (waterHeaterUpgrade) subtotal += WATER_HEATER_UPGRADE_PRICE;
+    if (roofHatchLadder) subtotal += ROOF_HATCH_LADDER_PRICE;
+    if (ayalokSecurity) subtotal += AYALOK_SECURITY_PRICE;
+    if (gasHeatingSystem) subtotal += GAS_HEATING_SYSTEM_PRICE;
 
     // Pergola (priced per sqm)
     const pergolaOpt = PERGOLA_OPTIONS.find(o => o.id === pergola);
@@ -737,9 +778,13 @@ export default function App() {
     const extDoorOpt = EXT_DOORS_OPTIONS.find(o => o.id === extDoor);
     if (extDoorOpt) subtotal += extDoorOpt.price;
 
-    // Interior Doors (item 9: flat per-unit delta × total door count, plus ממ"ד wood-leaf add-on)
+    // Interior Doors (item 9/12: flat per-unit delta × total door count for the villa, plus ממ"ד wood-leaf add-on)
     const intDoorOpt = INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption);
-    if (intDoorOpt) subtotal += intDoorOpt.price * intDoor.doorCount;
+    const doorCount = DOOR_COUNT_BY_VILLA[Number(villaNumber)];
+    if (intDoorOpt) {
+      if (doorCount == null) unpricedItemsSelected = true;
+      else subtotal += intDoorOpt.price * doorCount;
+    }
     if (intDoor.mamadWoodLeaf) subtotal += MAMAD_WOOD_LEAF_PRICE * intDoor.mamadWoodLeafQty;
 
     // Entrance Path (premium options priced per sqm; standard options are ₪0 regardless)
@@ -760,11 +805,9 @@ export default function App() {
     }
 
     // Electricity & Plumbing (each point type priced and quantified separately)
-    if (electricity.hasChanges) {
-      ELECTRICITY_POINT_TYPES.forEach(type => {
-        subtotal += type.price * (electricity.points[type.id]?.length || 0);
-      });
-    }
+    ELECTRICITY_POINT_TYPES.forEach(type => {
+      subtotal += type.price * (electricity.points[type.id]?.length || 0);
+    });
 
     const vat = Math.round(subtotal * 0.18);
     const total = subtotal + vat;
@@ -813,7 +856,7 @@ export default function App() {
             payload: {
               planStatus, extraItems,
               stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
-              kitchen, plasterThermalRender,
+              kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem,
               pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
               airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
               stepNotes, electricity, pricing
@@ -911,7 +954,7 @@ export default function App() {
             </div>
 
             <div className="highlight-box copper" style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
-              <span>ℹ</span> מילוי הבחירות במערכת מתבצע יחד עם <strong>מתאמת שינויי הדיירים, נעה רומפלר</strong> בלבד. הדיירים צופים בבחירות ומאשרים אותן, אך אינם ממלאים אותן לבד — יש לתאם פגישה עם נעה לביצוע הבחירות במשותף.
+              <span>ℹ</span> מילוי הבחירות במערכת מתבצע יחד עם <strong>מתאמת שינויי הדיירים</strong> בלבד. הדיירים צופים בבחירות ומאשרים אותן, אך אינם ממלאים אותן לבד — יש לתאם פגישה לביצוע הבחירות במשותף.
             </div>
 
             <h3 style={{ marginBottom: '1rem' }}>הנושאים לבחירה בתהליך:</h3>
@@ -920,7 +963,6 @@ export default function App() {
               <div className="intro-mini-card"><span>✅</span> תכניות סופיות לאחר שינויים</div>
               <div className="intro-mini-card"><span>🪜</span> מדרגות</div>
               <div className="intro-mini-card"><span>⛓️</span> מעקות</div>
-              <div className="intro-mini-card"><span>🎨</span> תוספת טיח</div>
               <div className="intro-mini-card"><span>⛱️</span> פרגולה</div>
               <div className="intro-mini-card"><span>🚪</span> דלתות חוץ</div>
               <div className="intro-mini-card"><span>🚪</span> דלתות פנים</div>
@@ -928,6 +970,7 @@ export default function App() {
               <div className="intro-mini-card"><span>🔥</span> חימום תת רצפתי</div>
               <div className="intro-mini-card"><span>❄️</span> מיזוג אוויר</div>
               <div className="intro-mini-card"><span>🔌</span> שינויי חשמל אינסטלציה ובינוי</div>
+              <div className="intro-mini-card"><span>🧰</span> תוספות אופציונליות</div>
             </div>
 
             <div className="highlight-boxes-grid">
@@ -1259,12 +1302,12 @@ export default function App() {
           </div>
         );
 
-      case 6: // Plaster add-on (item 7: color picker removed, only the thermal render option remains)
+      case 6: // Optional add-ons (item 13: relocated from "תוספת טיח" + 4 new flat add-ons, item 14)
         return (
           <div>
             <div className="page-title-section">
-              <h2>תוספת טיח</h2>
-              <p className="page-intro-text">שליכט תרמי לקירות החוץ (חברת פלס)</p>
+              <h2>תוספות אופציונליות</h2>
+              <p className="page-intro-text">תוספות פאושליות, ניתנות לבחירה באופן עצמאי זו מזו</p>
             </div>
 
             <label className="checkbox-container" style={{ backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
@@ -1274,17 +1317,76 @@ export default function App() {
                 onChange={(e) => setPlasterThermalRender(e.target.checked)}
               />
               <span className="checkbox-text">
-                ברצוני להוסיף שליכט תרמי של חברת פלס (תוספת ₪{PLASTER_THERMAL_RENDER_PRICE.toLocaleString()} לדירה + מע"מ)
+                שליכט תרמי לקירות החוץ, חברת פלס (תוספת ₪{PLASTER_THERMAL_RENDER_PRICE.toLocaleString()} לדירה + מע"מ)
               </span>
             </label>
 
-            <div className="highlight-box green" style={{ marginTop: '1.5rem' }}>
-              <span>ℹ</span> {PLASTER_THERMAL_RENDER_VIDEO_NOTE}
+            <div className="highlight-box green" style={{ marginTop: '1rem' }}>
+              <span>ℹ</span> {PLASTER_THERMAL_RENDER_VIDEO_NOTE}{' '}
+              <a href={PLASTER_THERMAL_RENDER_VIDEO_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+                לצפייה בסרטון של פלס לחצו כאן
+              </a>
             </div>
 
-            <div className="highlight-box copper" style={{ marginTop: '1rem' }}>
+            <div className="highlight-box copper" style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
               <span>🎨</span> גוון הטיח: השליכט הטרמי (במידה ונבחר) יהיה בגרגור 200. אין אפשרות בחירת גוון לטיח החוץ הבסיסי.
+              <br /><br />
+              <strong>מה זה "גרגור 200"?</strong> הספרה מציינת את גודל גרגירי המרקם בשליכט התרמי, שקיים במספר דרגות גרגור (למשל 150, 200, 250) — ככל שהמספר גבוה יותר כך הגרגירים גדולים ובולטים יותר. גרגור 200 הוא מרקם בינוני: עדין ופחות מחוספס מגרגור 250, אך גס ובעל תחושת עומק גדולה יותר מגרגור 150.
             </div>
+
+            <label className="checkbox-container" style={{ backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)', marginTop: '0.75rem' }}>
+              <input
+                type="checkbox"
+                checked={waterHeaterUpgrade}
+                onChange={(e) => setWaterHeaterUpgrade(e.target.checked)}
+              />
+              <span className="checkbox-text">
+                הגדלת דוד חשמל מ-150 ל-250 ליטר (תוספת ₪{WATER_HEATER_UPGRADE_PRICE.toLocaleString()})
+              </span>
+            </label>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)', marginTop: '0.75rem' }}>
+              <label className="checkbox-container" style={{ flex: 1, padding: 0, border: 'none' }}>
+                <input
+                  type="checkbox"
+                  checked={roofHatchLadder}
+                  onChange={(e) => setRoofHatchLadder(e.target.checked)}
+                />
+                <span className="checkbox-text">
+                  פתח יציאה לגג בתוספת מדרגות (סולם) מתקפלות (תוספת ₪{ROOF_HATCH_LADDER_PRICE.toLocaleString()})
+                </span>
+              </label>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', flexShrink: 0 }}
+                onClick={() => setActiveModal({ title: 'מפרט טכני — סולם מתקפל לעליית גג', content: ROOF_HATCH_LADDER_SPEC })}
+              >
+                ℹ מפרט מלא
+              </button>
+            </div>
+
+            <label className="checkbox-container" style={{ backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)', marginTop: '0.75rem' }}>
+              <input
+                type="checkbox"
+                checked={ayalokSecurity}
+                onChange={(e) => setAyalokSecurity(e.target.checked)}
+              />
+              <span className="checkbox-text">
+                מערכת איילוק — חבילת ביטחון ומיגון לבית (תוספת ₪{AYALOK_SECURITY_PRICE.toLocaleString()} ליחידה)
+              </span>
+            </label>
+
+            <label className="checkbox-container" style={{ backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)', marginTop: '0.75rem' }}>
+              <input
+                type="checkbox"
+                checked={gasHeatingSystem}
+                onChange={(e) => setGasHeatingSystem(e.target.checked)}
+              />
+              <span className="checkbox-text">
+                מערכת חימום בגז — כולל צנרת, התקנה ואחריות, פז גז או שווה ערך (תוספת ₪{GAS_HEATING_SYSTEM_PRICE.toLocaleString()})
+              </span>
+            </label>
           </div>
         );
 
@@ -1468,16 +1570,18 @@ export default function App() {
               ))}
             </div>
 
-            {/* Item 9: total door count for the villa, plus ממ"ד wood-leaf add-on */}
+            {/* Item 9/12: total door count for the villa, looked up automatically — plus ממ"ד wood-leaf add-on */}
             <div className="selection-details-panel" style={{ marginBottom: '1.5rem' }}>
-              <div className="panel-row">
-                <span className="panel-row-label">כמות דלתות פנים בווילה:</span>
-                <div className="qty-stepper">
-                  <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, doorCount: Math.max(0, intDoor.doorCount - 1) })}>-</button>
-                  <input type="text" className="qty-value" readOnly value={intDoor.doorCount} />
-                  <button className="qty-btn" onClick={() => setIntDoor({ ...intDoor, doorCount: intDoor.doorCount + 1 })}>+</button>
+              {DOOR_COUNT_BY_VILLA[Number(villaNumber)] != null ? (
+                <div className="panel-row">
+                  <span className="panel-row-label">כמות דלתות פנים בווילה {villaNumber}:</span>
+                  <strong>{DOOR_COUNT_BY_VILLA[Number(villaNumber)]} יח'</strong>
                 </div>
-              </div>
+              ) : (
+                <div className="unpriced-message-box">
+                  <span>⚠</span> לא נמצאה כמות דלתות עבור מספר וילה {villaNumber} — יש לפנות למתאמת השינויים.
+                </div>
+              )}
 
               {INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.colors.length > 0 && (
                 <div className="swatch-group" style={{ marginTop: '1.25rem' }}>
@@ -1716,20 +1820,20 @@ export default function App() {
               <p className="page-intro-text">הוספה או העתקה של נקודות חשמל ומים במבנה. יעודכן לאחר פגישה עם מתאמת שינויים.</p>
             </div>
 
-            <label className="checkbox-container" style={{ margin: '2rem 0', backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <input 
-                type="checkbox" 
-                checked={electricity.hasChanges} 
-                onChange={(e) => setElectricity({ ...electricity, hasChanges: e.target.checked })}
-              />
-              <span className="checkbox-text">
-                ברצוני לבצע שינויים או תוספות בנקודות חשמל / מים בווילה
-              </span>
-            </label>
+            <div className="selection-details-panel" style={{ marginTop: '2rem' }}>
+                <h3 style={{ marginBottom: '0.5rem', fontSize: '1.2rem', fontFamily: 'var(--font-serif)' }}>מחירון נקודות:</h3>
+                <table className="summary-table" style={{ marginBottom: '1.5rem' }}>
+                  <thead>
+                    <tr><th>סוג שינוי</th><th>מחיר לנקודה (לא כולל מע"מ)</th></tr>
+                  </thead>
+                  <tbody>
+                    {ELECTRICITY_POINT_TYPES.map(type => (
+                      <tr key={type.id}><td>{type.name}</td><td>₪{type.price.toLocaleString()}</td></tr>
+                    ))}
+                  </tbody>
+                </table>
 
-            {electricity.hasChanges && (
-              <div className="selection-details-panel">
-                <h3 style={{ marginBottom: '1.25rem', fontSize: '1.2rem', fontFamily: 'var(--font-serif)' }}>פירוט שינויי נקודות:</h3>
+                <h3 style={{ marginBottom: '1.25rem', fontSize: '1.2rem', fontFamily: 'var(--font-serif)' }}>פירוט שינויי נקודות וציון מיקום:</h3>
 
                 {ELECTRICITY_POINT_TYPES.map(type => {
                   const points = electricity.points[type.id];
@@ -1737,7 +1841,7 @@ export default function App() {
                     <div key={type.id} className="panel-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem', marginBottom: '1.5rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span className="panel-row-label">{type.name} (₪{type.price} לנקודה) — {points.length} נק'</span>
-                        <button type="button" className="btn btn-secondary" style={{ padding: '0.35rem 0.9rem', fontSize: '0.85rem' }} onClick={() => addElectricityPoint(type.id)}>
+                        <button type="button" className="btn btn-secondary" style={{ padding: '0.35rem 0.9rem', fontSize: '0.85rem' }} disabled={viewOnly} onClick={() => addElectricityPoint(type.id)}>
                           + הוסף נקודה
                         </button>
                       </div>
@@ -1759,6 +1863,7 @@ export default function App() {
                                 type="button"
                                 className="btn btn-secondary"
                                 style={{ padding: '0.35rem 0.7rem', fontSize: '0.85rem' }}
+                                disabled={viewOnly}
                                 onClick={() => removeElectricityPoint(type.id, point.id)}
                               >
                                 הסר
@@ -1770,8 +1875,17 @@ export default function App() {
                     </div>
                   );
                 })}
+
+                {(() => {
+                  const elecSubtotal = ELECTRICITY_POINT_TYPES.reduce((sum, t) => sum + t.price * (electricity.points[t.id]?.length || 0), 0);
+                  return (
+                    <div className="panel-row" style={{ borderTop: '1px solid var(--line)', paddingTop: '0.75rem', fontWeight: 600 }}>
+                      <span>סה"כ לפרק זה (לא כולל מע"מ):</span>
+                      <span>₪{elecSubtotal.toLocaleString()}</span>
+                    </div>
+                  );
+                })()}
               </div>
-            )}
           </div>
         );
 
@@ -1858,14 +1972,28 @@ export default function App() {
                     </td>
                   </tr>
 
-                  {/* Plaster thermal render add-on */}
+                  {/* Optional add-ons (item 13/14) — only rows the tenant actually selected */}
                   <tr>
-                    <td><strong>תוספת טיח (שליכט תרמי)</strong></td>
-                    <td>{plasterThermalRender ? 'כן — שליכט תרמי פלס' : 'ללא תוספת'}</td>
-                    <td>גרגור 200</td>
+                    <td><strong>תוספות אופציונליות</strong></td>
+                    <td>
+                      {[
+                        plasterThermalRender && 'שליכט תרמי פלס',
+                        waterHeaterUpgrade && 'הגדלת דוד חשמל ל-250 ליטר',
+                        roofHatchLadder && 'פתח יציאה לגג + סולם מתקפל',
+                        ayalokSecurity && 'מערכת איילוק',
+                        gasHeatingSystem && 'מערכת חימום בגז'
+                      ].filter(Boolean).join(' · ') || 'ללא תוספות'}
+                    </td>
+                    <td>—</td>
                     <td>—</td>
                     <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      {plasterThermalRender ? `₪${PLASTER_THERMAL_RENDER_PRICE.toLocaleString()}` : 'כלול בסטנדרט'}
+                      ₪{(
+                        (plasterThermalRender ? PLASTER_THERMAL_RENDER_PRICE : 0) +
+                        (waterHeaterUpgrade ? WATER_HEATER_UPGRADE_PRICE : 0) +
+                        (roofHatchLadder ? ROOF_HATCH_LADDER_PRICE : 0) +
+                        (ayalokSecurity ? AYALOK_SECURITY_PRICE : 0) +
+                        (gasHeatingSystem ? GAS_HEATING_SYSTEM_PRICE : 0)
+                      ).toLocaleString()}
                     </td>
                   </tr>
 
@@ -1899,12 +2027,12 @@ export default function App() {
                       גוון: {intDoor.color || 'ללא בחירה'} · ספק: {INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.supplier}
                       {intDoor.mamadWoodLeaf && ` · תוספת עץ לממ"ד (${intDoor.mamadWoodLeafQty})`}
                     </td>
-                    <td>{intDoor.doorCount} יח'</td>
-                    <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                      ₪{(
-                        (INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.price || 0) * intDoor.doorCount +
+                    <td>{DOOR_COUNT_BY_VILLA[Number(villaNumber)] != null ? `${DOOR_COUNT_BY_VILLA[Number(villaNumber)]} יח'` : '—'}</td>
+                    <td style={{ textAlign: 'left', fontWeight: 'bold', color: DOOR_COUNT_BY_VILLA[Number(villaNumber)] == null ? 'var(--red-text)' : 'inherit' }}>
+                      {DOOR_COUNT_BY_VILLA[Number(villaNumber)] == null ? 'לא נמצאה כמות לווילה זו – פנה למתאמת השינויים' : `₪${(
+                        (INT_DOORS_OPTIONS.find(o => o.id === intDoor.selectedOption)?.price || 0) * DOOR_COUNT_BY_VILLA[Number(villaNumber)] +
                         (intDoor.mamadWoodLeaf ? MAMAD_WOOD_LEAF_PRICE * intDoor.mamadWoodLeafQty : 0)
-                      ).toLocaleString()}
+                      ).toLocaleString()}`}
                     </td>
                   </tr>
 
@@ -1944,7 +2072,7 @@ export default function App() {
                   </tr>
 
                   {/* Electricity & Plumbing (one row per point type actually requested) */}
-                  {electricity.hasChanges && ELECTRICITY_POINT_TYPES.some(t => electricity.points[t.id]?.length > 0) ? (
+                  {ELECTRICITY_POINT_TYPES.some(t => electricity.points[t.id]?.length > 0) ? (
                     ELECTRICITY_POINT_TYPES.filter(t => electricity.points[t.id]?.length > 0).map(type => (
                       <tr key={type.id}>
                         <td><strong>{type.name}</strong></td>
