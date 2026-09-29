@@ -209,18 +209,24 @@ const PLASTER_THERMAL_RENDER_VIDEO_NOTE = 'סרטון המדגים את השלי
 const PLASTER_THERMAL_RENDER_VIDEO_URL = 'https://www.facebook.com/peles.il/videos/-בניסוי-השוואתי-מעניין-עם-שליכט-אקרילי-תרמי-תרמוקריל-מבית-פלסתשפטו-בעצמכם-מדברים/832743533046495/';
 
 // "תוספות אופציונליות" (end-of-wizard optional add-ons) — flat prices per villa, excl. VAT.
-const WATER_HEATER_UPGRADE_PRICE = 2000; // הגדלת דוד חשמל מ-150 ל-250 ליטר
+const WATER_HEATER_UPGRADE_PRICE = 2000; // הגדלת דוד חשמל מ-150 ל-200 ליטר
 const ROOF_HATCH_LADDER_PRICE = 6000; // פתח יציאה לגג + סולם מתקפל, מפרט טכני מצורף
-const AYALOK_SECURITY_PRICE = 3000; // מערכת איילוק — חבילת ביטחון ומיגון לבית
+// Ayalok: no fixed price any more, priced on request (not added to the subtotal).
+// Fill in the video / guide links when available; each link is shown only once it is set.
+const AYALOK_VIDEO_URL = '';
+const AYALOK_GUIDE_URL = '';
+// Smart-electric prep (neutral wire at switches + deep boxes), priced per floor level.
+const SMART_ELECTRIC_PREP_PRICE_PER_LEVEL = 2500;
 const GAS_HEATING_SYSTEM_PRICE = 9000; // מערכת חימום בגז כולל צנרת, התקנה ואחריות (פז גז או שווה ערך)
 const ROOF_HATCH_LADDER_SPEC = '• סולם מתכת מגולוונת, צבוע אפוקסי בחלקו, עובי ברזל 2 מ"מ.\n• מתחבר לחלק התחתון של הפתח באמצעות משקוף מתכת צבוע לבן בגובה 14.5 ס"מ.\n• גוף הסולם מחובר למסגרת ע"י שני קפיצים חזקים בקוטר 35 מ"מ, ניתנים לכיוון במספר מצבים.\n• נסגר במישור התקרה ע"י דלת פנל עץ מלא בעובי 16 מ"מ עם סגר מתכת קפיצי.\n• המדרכים מחוברים ל"שמיניות" ע"י ברגים ואומי אבטחה עובי 8 מ"מ מגולוון, עם ארבעה גלגלים במדרגה הראשונה לפיזור עומס.\n• מגיע עם מעקה עליון משני צידי הפתח. מתאים לגובה תקרה עד 3 מטרים, מותקן בזווית 70–75 מעלות.\n• אחריות על כל חלקי הסולם למשך 10 שנים.\n• מגוון רחב של מידות פתח זמינות — המידה הסופית תיקבע בתיאום מול מתאמת השינויים בהתאם למידות פתח הגג בווילה.';
 
-// Prices from "חוברת תוספות ומחירים.xlsx": row 15 (תוספות חשמל, נק' מאור/שקע) covers both
-// light and power points at one price; row 16 (תוספות אינסטלציה, נק' מים/ניקוז) covers water.
+// Point changes are priced per the current Dekel price list (מחירון דקל), so no fixed price
+// is shown and they are NOT added to the subtotal; the quantity is counted automatically.
+const ELECTRICITY_PRICE_NOTE = 'לפי מחירון דקל עדכני';
 const ELECTRICITY_POINT_TYPES = [
-  { id: 'light', name: 'העתקת נקודת מאור', price: 250 },
-  { id: 'water', name: 'העתקת נקודת מים', price: 450 },
-  { id: 'power', name: 'הוספת נקודת חשמל', price: 250 }
+  { id: 'light', name: 'העתקת נקודת מאור' },
+  { id: 'water', name: 'העתקת נקודת מים' },
+  { id: 'power', name: 'הוספת נקודת חשמל' }
 ];
 
 // Local draft persistence: keeps the tenant's in-progress selections across page refreshes.
@@ -340,6 +346,8 @@ export default function App() {
   const [roofHatchLadder, setRoofHatchLadder] = useState(() => saved.roofHatchLadder ?? false);
   const [ayalokSecurity, setAyalokSecurity] = useState(() => saved.ayalokSecurity ?? false);
   const [gasHeatingSystem, setGasHeatingSystem] = useState(() => saved.gasHeatingSystem ?? false);
+  const [smartElectricPrep, setSmartElectricPrep] = useState(() => saved.smartElectricPrep ?? false);
+  const [smartElectricLevels, setSmartElectricLevels] = useState(() => saved.smartElectricLevels ?? 1);
 
   const [pergola, setPergola] = useState(() => saved.pergola ?? 1); // PERGOLA_OPTIONS ID
   const [pergolaQty, setPergolaQty] = useState(() => saved.pergolaQty ?? 20); // sqm
@@ -491,7 +499,7 @@ export default function App() {
       villaNumber, tenantName, isLoggedIn, currentStep,
       planStatus, extraItems,
       stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
-      kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem,
+      kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem, smartElectricPrep, smartElectricLevels,
       pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
       airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
       stepNotes, electricity
@@ -505,7 +513,7 @@ export default function App() {
     isSubmitted, villaNumber, tenantName, isLoggedIn, currentStep,
     planStatus, extraItems,
     stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
-    kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem,
+    kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem, smartElectricPrep, smartElectricLevels,
     pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
     airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
     stepNotes, electricity
@@ -556,6 +564,8 @@ export default function App() {
         if (s.roofHatchLadder !== undefined) setRoofHatchLadder(s.roofHatchLadder);
         if (s.ayalokSecurity !== undefined) setAyalokSecurity(s.ayalokSecurity);
         if (s.gasHeatingSystem !== undefined) setGasHeatingSystem(s.gasHeatingSystem);
+        if (s.smartElectricPrep !== undefined) setSmartElectricPrep(s.smartElectricPrep);
+        if (s.smartElectricLevels !== undefined) setSmartElectricLevels(s.smartElectricLevels);
         if (s.pergola !== undefined) setPergola(s.pergola);
         if (s.pergolaQty !== undefined) setPergolaQty(s.pergolaQty);
         if (s.extDoor !== undefined) setExtDoor(s.extDoor);
@@ -621,7 +631,7 @@ export default function App() {
     const selections = {
       planStatus, extraItems,
       stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
-      kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem,
+      kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem, smartElectricPrep, smartElectricLevels,
       pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
       airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
       stepNotes, electricity
@@ -767,7 +777,7 @@ export default function App() {
     if (plasterThermalRender) subtotal += PLASTER_THERMAL_RENDER_PRICE;
     if (waterHeaterUpgrade) subtotal += WATER_HEATER_UPGRADE_PRICE;
     if (roofHatchLadder) subtotal += ROOF_HATCH_LADDER_PRICE;
-    if (ayalokSecurity) subtotal += AYALOK_SECURITY_PRICE;
+    if (smartElectricPrep) subtotal += SMART_ELECTRIC_PREP_PRICE_PER_LEVEL * smartElectricLevels;
     if (gasHeatingSystem) subtotal += GAS_HEATING_SYSTEM_PRICE;
 
     // Pergola (priced per sqm)
@@ -805,14 +815,18 @@ export default function App() {
     }
 
     // Electricity & Plumbing (each point type priced and quantified separately)
-    ELECTRICITY_POINT_TYPES.forEach(type => {
-      subtotal += type.price * (electricity.points[type.id]?.length || 0);
-    });
+    // Electricity points (Dekel price list) and Ayalok (on request) are priced separately:
+    // flagged so the summary shows a notice, but they do not block submission.
+    const electricityPointsCount = ELECTRICITY_POINT_TYPES.reduce((n, t) => n + (electricity.points[t.id]?.length || 0), 0);
+    const pricedSeparatelyItems = [
+      electricityPointsCount > 0 && `שינויי נקודות חשמל/מים (${electricityPointsCount} נק', ${ELECTRICITY_PRICE_NOTE})`,
+      ayalokSecurity && 'מערכת איילוק (תמחור לפי דרישה)'
+    ].filter(Boolean);
 
     const vat = Math.round(subtotal * 0.18);
     const total = subtotal + vat;
 
-    return { subtotal, vat, total, unpricedItemsSelected };
+    return { subtotal, vat, total, unpricedItemsSelected, pricedSeparatelyItems };
   };
 
   const pricing = getSelectionPricing();
@@ -856,7 +870,7 @@ export default function App() {
             payload: {
               planStatus, extraItems,
               stairs, stairsFlightQty, stairsCustomNote, railings, railingsQty, railingsColor, railingsCustomNote,
-              kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem,
+              kitchen, plasterThermalRender, waterHeaterUpgrade, roofHatchLadder, ayalokSecurity, gasHeatingSystem, smartElectricPrep, smartElectricLevels,
               pergola, pergolaQty, extDoor, intDoor, path, pathQty, underfloorHeating,
               airconOptOut, airconAnnexAcknowledged, airconAnnexBuyer1Name, airconAnnexBuyer2Name,
               stepNotes, electricity, pricing
@@ -1341,7 +1355,7 @@ export default function App() {
                 onChange={(e) => setWaterHeaterUpgrade(e.target.checked)}
               />
               <span className="checkbox-text">
-                הגדלת דוד חשמל מ-150 ל-250 ליטר (תוספת ₪{WATER_HEATER_UPGRADE_PRICE.toLocaleString()})
+                הגדלת דוד חשמל מ-150 ל-200 ליטר (תוספת ₪{WATER_HEATER_UPGRADE_PRICE.toLocaleString()})
               </span>
             </label>
 
@@ -1373,9 +1387,21 @@ export default function App() {
                 onChange={(e) => setAyalokSecurity(e.target.checked)}
               />
               <span className="checkbox-text">
-                מערכת איילוק — חבילת ביטחון ומיגון לבית (תוספת ₪{AYALOK_SECURITY_PRICE.toLocaleString()} ליחידה)
+                מערכת איילוק, חבילת ביטחון ומיגון לבית (תמחור יבוצע לפי דרישה)
               </span>
             </label>
+            {(AYALOK_VIDEO_URL || AYALOK_GUIDE_URL) && (
+              <div className="highlight-box green" style={{ marginTop: '0.5rem' }}>
+                <span>ℹ</span> מערכת איילוק:{' '}
+                {AYALOK_VIDEO_URL && (
+                  <a href={AYALOK_VIDEO_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>לצפייה בסרטון</a>
+                )}
+                {AYALOK_VIDEO_URL && AYALOK_GUIDE_URL && ' | '}
+                {AYALOK_GUIDE_URL && (
+                  <a href={AYALOK_GUIDE_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>למדריך המערכת</a>
+                )}
+              </div>
+            )}
 
             <label className="checkbox-container" style={{ backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)', marginTop: '0.75rem' }}>
               <input
@@ -1387,6 +1413,30 @@ export default function App() {
                 מערכת חימום בגז — כולל צנרת, התקנה ואחריות, פז גז או שווה ערך (תוספת ₪{GAS_HEATING_SYSTEM_PRICE.toLocaleString()})
               </span>
             </label>
+
+            <div style={{ backgroundColor: 'var(--white)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--line)', marginTop: '0.75rem' }}>
+              <label className="checkbox-container" style={{ padding: 0, border: 'none' }}>
+                <input
+                  type="checkbox"
+                  checked={smartElectricPrep}
+                  onChange={(e) => setSmartElectricPrep(e.target.checked)}
+                />
+                <span className="checkbox-text">
+                  הכנות לחשמל חכם: קו אפס במתגים וקופסאות עמוקות (תוספת ₪{SMART_ELECTRIC_PREP_PRICE_PER_LEVEL.toLocaleString()} למפלס)
+                </span>
+              </label>
+              {smartElectricPrep && (
+                <div className="panel-row" style={{ marginTop: '0.75rem' }}>
+                  <span className="panel-row-label">מספר מפלסים:</span>
+                  <div className="qty-stepper">
+                    <button className="qty-btn" disabled={viewOnly} onClick={() => setSmartElectricLevels(Math.max(1, smartElectricLevels - 1))}>-</button>
+                    <input type="text" className="qty-value" readOnly value={smartElectricLevels} />
+                    <button className="qty-btn" disabled={viewOnly} onClick={() => setSmartElectricLevels(smartElectricLevels + 1)}>+</button>
+                  </div>
+                  <span style={{ fontWeight: 600 }}>₪{(SMART_ELECTRIC_PREP_PRICE_PER_LEVEL * smartElectricLevels).toLocaleString()}</span>
+                </div>
+              )}
+            </div>
           </div>
         );
 
@@ -1821,15 +1871,29 @@ export default function App() {
             </div>
 
             <div className="selection-details-panel" style={{ marginTop: '2rem' }}>
-                <h3 style={{ marginBottom: '0.5rem', fontSize: '1.2rem', fontFamily: 'var(--font-serif)' }}>מחירון נקודות:</h3>
+                <h3 style={{ marginBottom: '0.5rem', fontSize: '1.2rem', fontFamily: 'var(--font-serif)' }}>ריכוז נקודות:</h3>
                 <table className="summary-table" style={{ marginBottom: '1.5rem' }}>
                   <thead>
-                    <tr><th>סוג שינוי</th><th>מחיר לנקודה (לא כולל מע"מ)</th></tr>
+                    <tr><th>סוג שינוי</th><th>כמות</th><th>עלות ליחידה</th><th>סה"כ</th></tr>
                   </thead>
                   <tbody>
-                    {ELECTRICITY_POINT_TYPES.map(type => (
-                      <tr key={type.id}><td>{type.name}</td><td>₪{type.price.toLocaleString()}</td></tr>
-                    ))}
+                    {ELECTRICITY_POINT_TYPES.map(type => {
+                      const qty = electricity.points[type.id]?.length || 0;
+                      return (
+                        <tr key={type.id}>
+                          <td>{type.name}</td>
+                          <td>{qty} נק'</td>
+                          <td>{ELECTRICITY_PRICE_NOTE}</td>
+                          <td>{qty > 0 ? ELECTRICITY_PRICE_NOTE : '—'}</td>
+                        </tr>
+                      );
+                    })}
+                    <tr style={{ fontWeight: 600 }}>
+                      <td>סה"כ</td>
+                      <td>{ELECTRICITY_POINT_TYPES.reduce((n, t) => n + (electricity.points[t.id]?.length || 0), 0)} נק'</td>
+                      <td></td>
+                      <td>{ELECTRICITY_PRICE_NOTE}</td>
+                    </tr>
                   </tbody>
                 </table>
 
@@ -1840,7 +1904,7 @@ export default function App() {
                   return (
                     <div key={type.id} className="panel-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem', marginBottom: '1.5rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="panel-row-label">{type.name} (₪{type.price} לנקודה) — {points.length} נק'</span>
+                        <span className="panel-row-label">{type.name}: {points.length} נק'</span>
                         <button type="button" className="btn btn-secondary" style={{ padding: '0.35rem 0.9rem', fontSize: '0.85rem' }} disabled={viewOnly} onClick={() => addElectricityPoint(type.id)}>
                           + הוסף נקודה
                         </button>
@@ -1876,15 +1940,6 @@ export default function App() {
                   );
                 })}
 
-                {(() => {
-                  const elecSubtotal = ELECTRICITY_POINT_TYPES.reduce((sum, t) => sum + t.price * (electricity.points[t.id]?.length || 0), 0);
-                  return (
-                    <div className="panel-row" style={{ borderTop: '1px solid var(--line)', paddingTop: '0.75rem', fontWeight: 600 }}>
-                      <span>סה"כ לפרק זה (לא כולל מע"מ):</span>
-                      <span>₪{elecSubtotal.toLocaleString()}</span>
-                    </div>
-                  );
-                })()}
               </div>
           </div>
         );
@@ -1902,6 +1957,14 @@ export default function App() {
               <div className="warning-alert-banner">
                 <span>⚠</span>
                 ישנם פריטים שנבחרו ללא מחיר סופי (למשל וילה ללא מחיר מיזוג אוויר) – יש לפנות למתאמת השינויים להשלמת המחיר לפני חתימה סופית.
+              </div>
+            )}
+
+            {/* Items priced outside the app total (Dekel price list / on request) — notice only, not blocking */}
+            {pricing.pricedSeparatelyItems.length > 0 && (
+              <div className="warning-alert-banner">
+                <span>⚠</span>
+                פריטים שיתומחרו בנפרד ואינם כלולים בסה"כ: {pricing.pricedSeparatelyItems.join(' · ')}. התמחור הסופי יימסר ע"י מתאמת השינויים.
               </div>
             )}
 
@@ -1978,9 +2041,10 @@ export default function App() {
                     <td>
                       {[
                         plasterThermalRender && 'שליכט תרמי פלס',
-                        waterHeaterUpgrade && 'הגדלת דוד חשמל ל-250 ליטר',
+                        waterHeaterUpgrade && 'הגדלת דוד חשמל ל-200 ליטר',
                         roofHatchLadder && 'פתח יציאה לגג + סולם מתקפל',
-                        ayalokSecurity && 'מערכת איילוק',
+                        ayalokSecurity && 'מערכת איילוק (תמחור לפי דרישה)',
+                        smartElectricPrep && `הכנות לחשמל חכם (${smartElectricLevels} מפלסים)`,
                         gasHeatingSystem && 'מערכת חימום בגז'
                       ].filter(Boolean).join(' · ') || 'ללא תוספות'}
                     </td>
@@ -1991,7 +2055,7 @@ export default function App() {
                         (plasterThermalRender ? PLASTER_THERMAL_RENDER_PRICE : 0) +
                         (waterHeaterUpgrade ? WATER_HEATER_UPGRADE_PRICE : 0) +
                         (roofHatchLadder ? ROOF_HATCH_LADDER_PRICE : 0) +
-                        (ayalokSecurity ? AYALOK_SECURITY_PRICE : 0) +
+                        (smartElectricPrep ? SMART_ELECTRIC_PREP_PRICE_PER_LEVEL * smartElectricLevels : 0) +
                         (gasHeatingSystem ? GAS_HEATING_SYSTEM_PRICE : 0)
                       ).toLocaleString()}
                     </td>
@@ -2079,9 +2143,7 @@ export default function App() {
                         <td>{electricity.points[type.id].map((p, i) => `${i + 1}) ${p.note || 'ללא הערה'}`).join(' · ')}</td>
                         <td>—</td>
                         <td>{electricity.points[type.id].length} נק'</td>
-                        <td style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                          ₪{(type.price * electricity.points[type.id].length).toLocaleString()}
-                        </td>
+                        <td style={{ textAlign: 'left', fontWeight: 'bold' }}>{ELECTRICITY_PRICE_NOTE}</td>
                       </tr>
                     ))
                   ) : (
