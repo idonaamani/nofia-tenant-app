@@ -213,7 +213,7 @@ const WATER_HEATER_UPGRADE_PRICE = 2000; // הגדלת דוד חשמל מ-150 ל
 const ROOF_HATCH_LADDER_PRICE = 6000; // פתח יציאה לגג + סולם מתקפל, מפרט טכני מצורף
 // Ayalok: no fixed price any more, priced on request (not added to the subtotal).
 // Fill in the video / guide links when available; each link is shown only once it is set.
-const AYALOK_VIDEO_URL = '';
+const AYALOK_VIDEO_URL = 'https://www.youtube.com/watch?v=c5ah9lHrMw8';
 const AYALOK_GUIDE_URL = '';
 // Smart-electric prep (neutral wire at switches + deep boxes), priced per floor level.
 const SMART_ELECTRIC_PREP_PRICE_PER_LEVEL = 2500;
@@ -1394,7 +1394,7 @@ export default function App() {
               <div className="highlight-box green" style={{ marginTop: '0.5rem' }}>
                 <span>ℹ</span> מערכת איילוק:{' '}
                 {AYALOK_VIDEO_URL && (
-                  <a href={AYALOK_VIDEO_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>לצפייה בסרטון</a>
+                  <a href={AYALOK_VIDEO_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>קישור לסרטון הסבר על מערכת איילוק</a>
                 )}
                 {AYALOK_VIDEO_URL && AYALOK_GUIDE_URL && ' | '}
                 {AYALOK_GUIDE_URL && (
